@@ -7,7 +7,7 @@ import json
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional, List
-from rocksdict import Rdict, Options, AccessType
+from rocksdict import Rdict, Options
 
 
 class RocksDBStore:
@@ -98,9 +98,13 @@ class RocksDBStore:
         self.stats['operations']['cas_put'] += 1
         
         if if_absent:
-            existing = self.get(key)
-            if existing is not None:
-                return False
+            # Check existence without incrementing get counter (internal operation)
+            try:
+                value_bytes = self.db.get(key.encode('utf-8'))
+                if value_bytes is not None:
+                    return False
+            except Exception:
+                pass
         
         self.put(key, value)
         return True
@@ -118,11 +122,12 @@ class RocksDBStore:
         except KeyError:
             pass  # Key doesn't exist, that's fine
     
-    def keys(self, prefix: Optional[str] = None) -> List[str]:
+    def keys(self, prefix: Optional[str] = None, limit: Optional[int] = None) -> List[str]:
         """List all keys, optionally filtered by prefix.
         
         Args:
             prefix: Optional prefix to filter keys
+            limit: Optional limit on number of keys to return
             
         Returns:
             List of keys (as strings)
@@ -134,8 +139,13 @@ class RocksDBStore:
             for key in self.db.keys():
                 if key.startswith(prefix_bytes):
                     keys.append(key.decode('utf-8'))
+                    if limit and len(keys) >= limit:
+                        break
         else:
-            keys = [key.decode('utf-8') for key in self.db.keys()]
+            for key in self.db.keys():
+                keys.append(key.decode('utf-8'))
+                if limit and len(keys) >= limit:
+                    break
         
         return keys
     
@@ -148,7 +158,20 @@ class RocksDBStore:
         Returns:
             Number of keys
         """
-        return len(self.keys(prefix))
+        # For accurate counts, we need to iterate
+        # In production, consider maintaining separate counters
+        count = 0
+        
+        if prefix:
+            prefix_bytes = prefix.encode('utf-8')
+            for key in self.db.keys():
+                if key.startswith(prefix_bytes):
+                    count += 1
+        else:
+            for key in self.db.keys():
+                count += 1
+        
+        return count
     
     def get_stats(self) -> Dict[str, Any]:
         """Get RocksDB statistics.
@@ -176,22 +199,6 @@ class RocksDBStore:
             },
             'ops_per_second': round(total_ops / uptime, 2) if uptime > 0 else 0.0,
         }
-    
-    def get_rocksdb_property(self, property_name: str) -> Optional[str]:
-        """Get internal RocksDB property.
-        
-        Args:
-            property_name: RocksDB property name (e.g., 'rocksdb.stats')
-            
-        Returns:
-            Property value or None if not available
-        """
-        try:
-            # Try to get property if supported by rocksdict
-            # Note: rocksdict may not expose all RocksDB properties
-            return None  # Placeholder - rocksdict doesn't expose property interface
-        except Exception:
-            return None
     
     def close(self) -> None:
         """Close the RocksDB database."""

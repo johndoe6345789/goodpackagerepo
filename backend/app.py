@@ -717,9 +717,9 @@ def rocksdb_dashboard():
     try:
         stats = kv_store.get_stats()
         
-        # Sample some keys for display
-        all_keys = kv_store.keys()
-        sample_keys = all_keys[:20] if len(all_keys) > 20 else all_keys
+        # Sample some keys for display (limit to avoid loading all keys)
+        sample_keys = kv_store.keys(limit=20)
+        total_keys = stats['total_keys']
         
         html = f"""
 <!DOCTYPE html>
@@ -866,7 +866,7 @@ def rocksdb_dashboard():
         </div>
     </div>
     
-    <h2>🔑 Sample Keys ({len(sample_keys)} of {len(all_keys)})</h2>
+    <h2>🔑 Sample Keys ({len(sample_keys)} of {total_keys})</h2>
     <table>
         <thead>
             <tr>
