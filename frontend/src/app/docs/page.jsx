@@ -82,7 +82,7 @@ docker-compose up -d
           <li>Create another app: <code>goodrepo-frontend</code></li>
           <li>Follow the same deployment process</li>
           <li>Captain Definition File: <code>frontend/captain-definition</code></li>
-          <li>Set environment variable: <code>API_URL</code> = <code>https://goodrepo-backend.your-domain.com</code></li>
+          <li>Set environment variable: <code>NEXT_PUBLIC_API_URL</code> = <code>https://goodrepo-backend.your-domain.com</code></li>
         </ol>
 
         <h3>Step 5: Enable HTTPS</h3>
