@@ -1,0 +1,92 @@
+@import '../styles/variables';
+
+.card {
+  @include card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $spacing-md;
+  }
+  
+  &__title {
+    font-size: $font-size-h6;
+    font-weight: 500;
+    color: $text-primary;
+    margin: 0;
+  }
+  
+  &__subtitle {
+    font-size: $font-size-body2;
+    color: $text-secondary;
+    margin-top: $spacing-xs;
+  }
+  
+  &__body {
+    color: $text-primary;
+    line-height: 1.6;
+  }
+  
+  &__footer {
+    margin-top: $spacing-md;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    display: flex;
+    gap: $spacing-sm;
+  }
+}
+
+.button {
+  @include button-base;
+  
+  &--primary {
+    background: $primary-color;
+    color: white;
+    
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+  
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+    
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+  
+  &--small {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-caption;
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-caption;
+  font-weight: 500;
+  text-transform: uppercase;
+  
+  &--primary {
+    background: rgba(25, 118, 210, 0.1);
+    color: $primary-dark;
+  }
+  
+  &--success {
+    background: rgba(76, 175, 80, 0.1);
+    color: darken($success-color, 20%);
+  }
+  
+  &--warning {
+    background: rgba(255, 152, 0, 0.1);
+    color: darken($warning-color, 20%);
+  }
+}

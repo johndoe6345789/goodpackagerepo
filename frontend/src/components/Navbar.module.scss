@@ -1,0 +1,66 @@
+@import '../styles/variables';
+
+.navbar {
+  background: $surface-color;
+  @include elevation(2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  
+  &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  &__logo {
+    font-size: $font-size-h5;
+    font-weight: 500;
+    color: $primary-color;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    
+    &:hover {
+      text-decoration: none;
+    }
+  }
+  
+  &__nav {
+    display: flex;
+    gap: $spacing-lg;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+  }
+  
+  &__link {
+    color: $text-primary;
+    font-weight: 500;
+    transition: color $transition-duration $transition-easing;
+    
+    &:hover {
+      color: $primary-color;
+      text-decoration: none;
+    }
+  }
+  
+  &__button {
+    @include button-base;
+    padding: $spacing-xs $spacing-md;
+    background: transparent;
+    color: $error-color;
+    border: 1px solid $error-color;
+    font-size: $font-size-body2;
+    
+    &:hover {
+      background: rgba(244, 67, 54, 0.04);
+      @include elevation(1);
+    }
+  }
+}

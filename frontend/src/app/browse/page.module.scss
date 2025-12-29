@@ -1,0 +1,106 @@
+@import '../../styles/variables';
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-xl $spacing-lg;
+}
+
+.header {
+  margin-bottom: $spacing-xl;
+  
+  h1 {
+    font-size: $font-size-h3;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.search {
+  margin-bottom: $spacing-xl;
+  
+  &__input {
+    @include input-base;
+    font-size: $font-size-h6;
+    padding: $spacing-md;
+  }
+}
+
+.packages {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.package {
+  @include card;
+  padding: $spacing-lg;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  &__info {
+    flex: 1;
+  }
+  
+  &__name {
+    font-size: $font-size-h6;
+    font-weight: 500;
+    color: $primary-color;
+    margin-bottom: $spacing-xs;
+  }
+  
+  &__namespace {
+    font-size: $font-size-body2;
+    color: $text-secondary;
+    margin-bottom: $spacing-xs;
+  }
+  
+  &__version {
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(25, 118, 210, 0.1);
+    color: $primary-dark;
+    border-radius: $border-radius-sm;
+    font-size: $font-size-caption;
+    font-weight: 500;
+  }
+  
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+}
+
+.button {
+  @include button-base;
+  
+  &--primary {
+    background: $primary-color;
+    color: white;
+    
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+  
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+    
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+  
+  &--small {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-caption;
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: $spacing-xl;
+  color: $text-secondary;
+}
