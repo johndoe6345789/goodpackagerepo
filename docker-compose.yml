@@ -24,7 +24,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - API_URL=http://backend:5000
+      - NEXT_PUBLIC_API_URL=http://backend:5000
       - NODE_ENV=production
     depends_on:
       - backend

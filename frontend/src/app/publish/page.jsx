@@ -27,7 +27,7 @@ export default function PublishPage() {
     setStatus({ type: null, message: '' });
 
     try {
-      const apiUrl = process.env.API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       const url = `${apiUrl}/v1/${formData.namespace}/${formData.name}/${formData.version}/${formData.variant}/blob`;
       
       const response = await fetch(url, {

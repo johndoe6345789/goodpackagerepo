@@ -50,7 +50,7 @@ export default function AccountPage() {
     setLoading(true);
 
     try {
-      const apiUrl = process.env.API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       const token = localStorage.getItem('token');
       
       const response = await fetch(`${apiUrl}/auth/change-password`, {

@@ -35,7 +35,7 @@ export default function AdminPage() {
 
   const fetchConfig = async () => {
     try {
-      const apiUrl = process.env.API_URL || 'http://localhost:5000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
       const token = localStorage.getItem('token');
       const response = await fetch(`${apiUrl}/admin/config`, {
         headers: {

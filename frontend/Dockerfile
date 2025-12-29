@@ -14,8 +14,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Set API URL for build (can be overridden at runtime)
-ENV API_URL=http://backend:5000
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
