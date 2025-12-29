@@ -18,13 +18,18 @@ import jwt
 from werkzeug.exceptions import HTTPException
 import jsonschema
 
-import auth as auth_module
-import config_db
+import auth_sqlalchemy as auth_module
+import config_db_sqlalchemy as config_db
 
 app = Flask(__name__)
 CORS(app)
 
-# Configuration is now loaded from database, not JSON file
+# Load schema.json for reference
+SCHEMA_PATH = Path(__file__).parent.parent / "schema.json"
+with open(SCHEMA_PATH) as f:
+    SCHEMA = json.load(f)
+
+# Configuration is now loaded from database using SQLAlchemy
 # schema.json is only used once during initial database setup
 DB_CONFIG = config_db.get_repository_config()
 
