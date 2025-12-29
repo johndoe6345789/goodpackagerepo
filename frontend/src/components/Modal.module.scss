@@ -1,0 +1,225 @@
+@import '../../styles/variables';
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: $spacing-lg;
+  
+  &__content {
+    @include card;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: $spacing-xl;
+    animation: slideIn 0.2s ease-out;
+  }
+  
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    
+    h2 {
+      margin: 0;
+      font-size: $font-size-h5;
+    }
+  }
+  
+  &__close {
+    @include button-base;
+    padding: $spacing-xs;
+    background: transparent;
+    color: $text-secondary;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    min-width: auto;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: $text-primary;
+    }
+  }
+  
+  &__body {
+    margin-bottom: $spacing-lg;
+  }
+  
+  &__footer {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: flex-end;
+    padding-top: $spacing-md;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+  
+  &__label {
+    font-weight: 500;
+    color: $text-primary;
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    
+    &Required {
+      color: $error-color;
+    }
+  }
+  
+  &__input {
+    @include input-base;
+  }
+  
+  &__select {
+    @include input-base;
+    cursor: pointer;
+  }
+  
+  &__textarea {
+    @include input-base;
+    min-height: 100px;
+    resize: vertical;
+  }
+  
+  &__help {
+    font-size: $font-size-caption;
+    color: $text-secondary;
+  }
+  
+  &__error {
+    font-size: $font-size-caption;
+    color: $error-color;
+  }
+  
+  &__checkbox {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    
+    label {
+      cursor: pointer;
+      font-weight: normal;
+    }
+  }
+  
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: $spacing-md;
+  }
+}
+
+.button {
+  @include button-base;
+  
+  &--primary {
+    background: $primary-color;
+    color: white;
+    
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+  
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+    
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+  
+  &--danger {
+    background: $error-color;
+    color: white;
+    
+    &:hover {
+      background: darken($error-color, 10%);
+    }
+  }
+}
+
+.fieldArray {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  
+  &__item {
+    @include card;
+    padding: $spacing-md;
+    display: flex;
+    gap: $spacing-md;
+    align-items: flex-start;
+  }
+  
+  &__content {
+    flex: 1;
+  }
+  
+  &__remove {
+    @include button-base;
+    padding: $spacing-xs $spacing-sm;
+    background: transparent;
+    color: $error-color;
+    border: 1px solid $error-color;
+    font-size: $font-size-caption;
+    
+    &:hover {
+      background: rgba(244, 67, 54, 0.04);
+    }
+  }
+  
+  &__add {
+    @include button-base;
+    background: transparent;
+    color: $primary-color;
+    border: 1px dashed $primary-color;
+    
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+      border-style: solid;
+    }
+  }
+}

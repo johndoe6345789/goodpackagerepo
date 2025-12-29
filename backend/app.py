@@ -1,6 +1,7 @@
 """
 Package Repository Server - Flask Backend
 Implements the schema.json declarative repository specification.
+Configuration is stored in SQLite database - schema.json is only used for initial load.
 """
 
 import json
@@ -23,10 +24,9 @@ import config_db
 app = Flask(__name__)
 CORS(app)
 
-# Load schema configuration
-SCHEMA_PATH = Path(__file__).parent.parent / "schema.json"
-with open(SCHEMA_PATH) as f:
-    SCHEMA = json.load(f)
+# Configuration is now loaded from database, not JSON file
+# schema.json is only used once during initial database setup
+DB_CONFIG = config_db.get_repository_config()
 
 # Configuration
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/tmp/data"))
@@ -53,10 +53,19 @@ class RepositoryError(Exception):
 
 
 def get_blob_path(digest: str) -> Path:
-    """Generate blob storage path based on schema configuration."""
+    """Generate blob storage path based on database configuration."""
     # Remove sha256: prefix if present
     clean_digest = digest.replace("sha256:", "")
-    # Use addressing template from schema
+    
+    # Get blob store config from database
+    config = config_db.get_repository_config()
+    if config and config.get('blob_stores'):
+        # Use first blob store for now (could be extended to support multiple)
+        blob_store = config['blob_stores'][0]
+        # Use path template from database: sha256/{digest:0:2}/{digest:2:2}/{digest}
+        return BLOB_DIR / clean_digest[:2] / clean_digest[2:4] / clean_digest
+    
+    # Fallback to default path
     return BLOB_DIR / clean_digest[:2] / clean_digest[2:4] / clean_digest
 
 
@@ -88,20 +97,38 @@ def require_scopes(required_scopes: list) -> Optional[Dict[str, Any]]:
     return principal
 
 
+def get_entity_config(entity_name: str = "artifact") -> Optional[Dict[str, Any]]:
+    """Get entity configuration from database."""
+    config = config_db.get_repository_config()
+    if not config or 'entities' not in config:
+        return None
+    
+    for entity in config['entities']:
+        if entity['name'] == entity_name:
+            return entity
+    
+    return None
+
+
 def normalize_entity(entity_data: Dict[str, Any], entity_type: str = "artifact") -> Dict[str, Any]:
-    """Normalize entity fields based on schema configuration."""
-    entity_config = SCHEMA["entities"][entity_type]
+    """Normalize entity fields based on database schema configuration."""
+    entity_config = get_entity_config(entity_type)
+    if not entity_config:
+        return entity_data
+    
     normalized = {}
     
-    for field_name, field_config in entity_config["fields"].items():
+    for field in entity_config.get('fields', []):
+        field_name = field['name']
         value = entity_data.get(field_name)
+        
         if value is None:
-            if not field_config.get("optional", False):
+            if not field.get('optional', False):
                 normalized[field_name] = ""
             continue
         
-        # Apply normalization rules
-        normalizations = field_config.get("normalize", [])
+        # Apply normalization rules from database
+        normalizations = json.loads(field.get('normalizations', '[]'))
         for norm in normalizations:
             if norm == "trim":
                 value = value.strip()
@@ -118,20 +145,22 @@ def normalize_entity(entity_data: Dict[str, Any], entity_type: str = "artifact")
 
 
 def validate_entity(entity_data: Dict[str, Any], entity_type: str = "artifact") -> None:
-    """Validate entity against schema constraints."""
-    entity_config = SCHEMA["entities"][entity_type]
+    """Validate entity against database schema constraints."""
+    entity_config = get_entity_config(entity_type)
+    if not entity_config:
+        return
     
-    for constraint in entity_config.get("constraints", []):
-        field = constraint["field"]
+    for constraint in entity_config.get('constraints', []):
+        field = constraint['field']
         value = entity_data.get(field)
         
         # Skip validation if field is optional and not present
-        if constraint.get("when_present", False) and not value:
+        if constraint.get('when_present', False) and not value:
             continue
         
-        if value and "regex" in constraint:
+        if value and 'regex' in constraint:
             import re
-            if not re.match(constraint["regex"], value):
+            if not re.match(constraint['regex'], value):
                 raise RepositoryError(
                     f"Invalid {field}: does not match pattern {constraint['regex']}",
                     400,

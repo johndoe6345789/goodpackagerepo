@@ -179,6 +179,183 @@ def init_config_db():
         )
     """)
     
+    # Document schemas (for storage.documents)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS document_configs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            store TEXT NOT NULL,
+            key_template TEXT NOT NULL,
+            schema_name TEXT NOT NULL,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Storage schemas (for storage.schemas)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS storage_schemas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            schema_definition TEXT NOT NULL,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Indexes
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS indexes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            source_document TEXT NOT NULL,
+            materialization_mode TEXT,
+            materialization_trigger TEXT,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Index keys
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS index_keys (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            index_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            fields TEXT NOT NULL,
+            sort TEXT,
+            unique_key INTEGER DEFAULT 0,
+            FOREIGN KEY (index_id) REFERENCES indexes(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Upstreams
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS upstreams (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            base_url TEXT NOT NULL,
+            auth_mode TEXT,
+            connect_timeout_ms INTEGER,
+            read_timeout_ms INTEGER,
+            retry_max_attempts INTEGER,
+            retry_backoff_ms INTEGER,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Event types
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS event_types (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            durable INTEGER DEFAULT 1,
+            schema_definition TEXT,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Replication configuration
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS replication_config (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            mode TEXT NOT NULL,
+            log_store TEXT,
+            log_key_prefix TEXT,
+            log_ordering TEXT,
+            log_max_event_bytes INTEGER,
+            shipping_strategy TEXT,
+            shipping_dedupe_enabled INTEGER,
+            shipping_batch_max_events INTEGER,
+            shipping_batch_max_bytes INTEGER,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # GC (Garbage Collection) configuration
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS gc_config (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            enabled INTEGER DEFAULT 1,
+            immutable_after_publish INTEGER DEFAULT 1,
+            keep_last_n_versions INTEGER DEFAULT 50,
+            keep_tags_forever INTEGER DEFAULT 1,
+            sweep_schedule_rrule TEXT,
+            sweep_unreferenced_after_seconds INTEGER DEFAULT 604800,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Ops limits
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS ops_limits (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            closed_world INTEGER DEFAULT 1,
+            max_pipeline_ops INTEGER DEFAULT 128,
+            max_request_body_bytes INTEGER DEFAULT 2147483648,
+            max_json_bytes INTEGER DEFAULT 10485760,
+            max_kv_value_bytes INTEGER DEFAULT 1048576,
+            max_cpu_ms_per_request INTEGER DEFAULT 200,
+            max_io_ops_per_request INTEGER DEFAULT 5000,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Allowed operations
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS allowed_ops (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            operation TEXT NOT NULL,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Invariants
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS invariants (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            invariant_id TEXT NOT NULL,
+            description TEXT NOT NULL,
+            assertion TEXT NOT NULL,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Validation rules
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS validation_rules (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            rule_id TEXT NOT NULL,
+            rule_type TEXT NOT NULL,
+            requirement TEXT NOT NULL,
+            on_fail TEXT NOT NULL,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
+    # Versioning configuration
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS versioning_config (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            config_id INTEGER NOT NULL,
+            scheme TEXT NOT NULL,
+            ordering TEXT NOT NULL,
+            allow_prerelease INTEGER DEFAULT 0,
+            latest_policy_enabled INTEGER DEFAULT 1,
+            latest_policy_monotonic INTEGER DEFAULT 1,
+            latest_policy_exclude_prerelease INTEGER DEFAULT 1,
+            FOREIGN KEY (config_id) REFERENCES repository_config(id) ON DELETE CASCADE
+        )
+    """)
+    
     conn.commit()
     conn.close()
 
@@ -352,6 +529,206 @@ def load_schema_to_db(schema_path: Path):
         1 if features['proxy_enabled'] else 0,
         1 if schema['gc']['enabled'] else 0
     ))
+    
+    # Insert document configs
+    for doc_name, doc_data in schema['storage'].get('documents', {}).items():
+        cursor.execute("""
+            INSERT INTO document_configs (config_id, name, store, key_template, schema_name)
+            VALUES (?, ?, ?, ?, ?)
+        """, (config_id, doc_name, doc_data['store'], doc_data['key_template'], doc_data['schema']))
+    
+    # Insert storage schemas
+    for schema_name, schema_def in schema['storage'].get('schemas', {}).items():
+        cursor.execute("""
+            INSERT INTO storage_schemas (config_id, name, schema_definition)
+            VALUES (?, ?, ?)
+        """, (config_id, schema_name, json.dumps(schema_def)))
+    
+    # Insert indexes
+    for index_name, index_data in schema.get('indexes', {}).items():
+        cursor.execute("""
+            INSERT INTO indexes (config_id, name, source_document, materialization_mode, materialization_trigger)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            config_id,
+            index_name,
+            index_data['source_document'],
+            index_data['materialization'].get('mode'),
+            index_data['materialization'].get('trigger')
+        ))
+        index_id = cursor.lastrowid
+        
+        # Insert index keys
+        for key in index_data.get('keys', []):
+            cursor.execute("""
+                INSERT INTO index_keys (index_id, name, fields, sort, unique_key)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                index_id,
+                key['name'],
+                json.dumps(key['fields']),
+                json.dumps(key.get('sort', [])),
+                1 if key.get('unique', False) else 0
+            ))
+    
+    # Insert upstreams
+    for upstream_name, upstream_data in schema.get('upstreams', {}).items():
+        cursor.execute("""
+            INSERT INTO upstreams (
+                config_id, name, base_url, auth_mode,
+                connect_timeout_ms, read_timeout_ms,
+                retry_max_attempts, retry_backoff_ms
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            config_id,
+            upstream_name,
+            upstream_data['base_url'],
+            upstream_data.get('auth', {}).get('mode'),
+            upstream_data.get('timeouts_ms', {}).get('connect'),
+            upstream_data.get('timeouts_ms', {}).get('read'),
+            upstream_data.get('retry', {}).get('max_attempts'),
+            upstream_data.get('retry', {}).get('backoff_ms')
+        ))
+    
+    # Insert event types
+    for event in schema.get('events', {}).get('types', []):
+        cursor.execute("""
+            INSERT INTO event_types (config_id, name, durable, schema_definition)
+            VALUES (?, ?, ?, ?)
+        """, (
+            config_id,
+            event['name'],
+            1 if event.get('durable', True) else 0,
+            json.dumps(event.get('schema', {}))
+        ))
+    
+    # Insert replication config
+    replication = schema.get('replication', {})
+    if replication:
+        cursor.execute("""
+            INSERT INTO replication_config (
+                config_id, mode, log_store, log_key_prefix, log_ordering,
+                log_max_event_bytes, shipping_strategy, shipping_dedupe_enabled,
+                shipping_batch_max_events, shipping_batch_max_bytes
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            config_id,
+            replication.get('mode'),
+            replication.get('log', {}).get('store'),
+            replication.get('log', {}).get('key_prefix'),
+            replication.get('log', {}).get('ordering'),
+            replication.get('log', {}).get('max_event_bytes'),
+            replication.get('shipping', {}).get('strategy'),
+            1 if replication.get('shipping', {}).get('dedupe', {}).get('enabled', False) else 0,
+            replication.get('shipping', {}).get('batch', {}).get('max_events'),
+            replication.get('shipping', {}).get('batch', {}).get('max_bytes')
+        ))
+    
+    # Insert GC config
+    gc = schema.get('gc', {})
+    if gc:
+        cursor.execute("""
+            INSERT INTO gc_config (
+                config_id, enabled, immutable_after_publish, keep_last_n_versions,
+                keep_tags_forever, sweep_schedule_rrule, sweep_unreferenced_after_seconds
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            config_id,
+            1 if gc.get('enabled', True) else 0,
+            1 if gc.get('retention', {}).get('immutable_after_publish', True) else 0,
+            gc.get('retention', {}).get('keep_last_n_versions'),
+            1 if gc.get('retention', {}).get('keep_tags_forever', True) else 0,
+            gc.get('sweep', {}).get('schedule', {}).get('rrule'),
+            gc.get('sweep', {}).get('sweep_unreferenced_after_seconds')
+        ))
+    
+    # Insert ops limits
+    ops = schema.get('ops', {})
+    if ops:
+        cursor.execute("""
+            INSERT INTO ops_limits (
+                config_id, closed_world, max_pipeline_ops, max_request_body_bytes,
+                max_json_bytes, max_kv_value_bytes, max_cpu_ms_per_request,
+                max_io_ops_per_request
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            config_id,
+            1 if ops.get('closed_world', True) else 0,
+            ops.get('limits', {}).get('max_pipeline_ops'),
+            ops.get('limits', {}).get('max_request_body_bytes'),
+            ops.get('limits', {}).get('max_json_bytes'),
+            ops.get('limits', {}).get('max_kv_value_bytes'),
+            ops.get('limits', {}).get('max_cpu_ms_per_request'),
+            ops.get('limits', {}).get('max_io_ops_per_request')
+        ))
+        
+        # Insert allowed operations
+        for op in ops.get('allowed', []):
+            cursor.execute("""
+                INSERT INTO allowed_ops (config_id, operation)
+                VALUES (?, ?)
+            """, (config_id, op))
+    
+    # Insert invariants
+    for invariant in schema.get('invariants', {}).get('global', []):
+        cursor.execute("""
+            INSERT INTO invariants (config_id, invariant_id, description, assertion)
+            VALUES (?, ?, ?, ?)
+        """, (
+            config_id,
+            invariant['id'],
+            invariant['description'],
+            json.dumps(invariant['assert'])
+        ))
+    
+    # Insert validation rules
+    validation = schema.get('validation', {})
+    for rule in validation.get('load_time_checks', []):
+        cursor.execute("""
+            INSERT INTO validation_rules (config_id, rule_id, rule_type, requirement, on_fail)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            config_id,
+            rule['id'],
+            'load_time',
+            json.dumps(rule['require']),
+            rule['on_fail']
+        ))
+    
+    for rule in validation.get('runtime_checks', []):
+        cursor.execute("""
+            INSERT INTO validation_rules (config_id, rule_id, rule_type, requirement, on_fail)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            config_id,
+            rule['id'],
+            'runtime',
+            json.dumps(rule['require']),
+            rule['on_fail']
+        ))
+    
+    # Insert versioning config
+    versioning = schema.get('entities', {}).get('versioning', {})
+    if versioning:
+        cursor.execute("""
+            INSERT INTO versioning_config (
+                config_id, scheme, ordering, allow_prerelease,
+                latest_policy_enabled, latest_policy_monotonic, latest_policy_exclude_prerelease
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            config_id,
+            versioning.get('scheme'),
+            versioning.get('ordering'),
+            1 if versioning.get('allow_prerelease', False) else 0,
+            1 if versioning.get('latest_policy', {}).get('enabled', True) else 0,
+            1 if versioning.get('latest_policy', {}).get('monotonic', True) else 0,
+            1 if versioning.get('latest_policy', {}).get('exclude_prerelease', True) else 0
+        ))
     
     conn.commit()
     conn.close()
