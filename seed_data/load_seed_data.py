@@ -53,8 +53,12 @@ def publish_package(token: str, package: Dict[str, Any]) -> None:
     response = requests.put(url, headers=headers, data=content)
     
     if response.status_code == 201:
-        data = response.json()
-        print(f"✅ Published {namespace}/{name}:{version}@{variant} (digest: {data['digest'][:16]}...)")
+        try:
+            data = response.json()
+            digest = data.get('digest', 'unknown')
+            print(f"✅ Published {namespace}/{name}:{version}@{variant} (digest: {digest[:16]}...)")
+        except (ValueError, KeyError):
+            print(f"✅ Published {namespace}/{name}:{version}@{variant}")
     elif response.status_code == 409:
         print(f"⚠️  Package {namespace}/{name}:{version}@{variant} already exists, skipping")
     else:

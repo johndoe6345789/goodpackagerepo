@@ -71,7 +71,7 @@ def load_schema_to_db(schema_path: Path):
                     entity_id=entity.id,
                     name=field_name,
                     type=field_data['type'],
-                    optional=1 if field_data.get('optional', False) else 0,
+                    optional=field_data.get('optional', False),
                     normalizations=json.dumps(field_data.get('normalize', []))
                 )
                 session.add(field)
@@ -82,7 +82,7 @@ def load_schema_to_db(schema_path: Path):
                     entity_id=entity.id,
                     field=constraint['field'],
                     regex=constraint['regex'],
-                    when_present=1 if constraint.get('when_present', False) else 0
+                    when_present=constraint.get('when_present', False)
                 )
                 session.add(constraint_obj)
         

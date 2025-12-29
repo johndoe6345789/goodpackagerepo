@@ -26,8 +26,12 @@ CORS(app)
 
 # Load schema.json for reference
 SCHEMA_PATH = Path(__file__).parent.parent / "schema.json"
-with open(SCHEMA_PATH) as f:
-    SCHEMA = json.load(f)
+try:
+    with open(SCHEMA_PATH) as f:
+        SCHEMA = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError) as e:
+    print(f"Error loading schema.json: {e}")
+    SCHEMA = {"ops": {"limits": {"max_request_body_bytes": 2147483648}}}  # Default fallback
 
 # Configuration is now loaded from database using SQLAlchemy
 # schema.json is only used once during initial database setup

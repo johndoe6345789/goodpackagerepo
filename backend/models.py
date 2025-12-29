@@ -6,8 +6,7 @@ This module defines the database schema using SQLAlchemy ORM.
 
 from datetime import datetime
 from sqlalchemy import (
-    create_engine, Column, Integer, String, Text, Boolean, ForeignKey, 
-    Table, MetaData
+    create_engine, Column, Integer, String, Text, Boolean, ForeignKey
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -111,7 +110,7 @@ class EntityField(ConfigBase):
     entity_id = Column(Integer, ForeignKey('entities.id', ondelete='CASCADE'), nullable=False)
     name = Column(String(255), nullable=False)
     type = Column(String(64), nullable=False)
-    optional = Column(Integer, default=0)
+    optional = Column(Boolean, default=False)
     normalizations = Column(Text)  # JSON
     
     entity = relationship("Entity", back_populates="fields")
@@ -125,7 +124,7 @@ class EntityConstraint(ConfigBase):
     entity_id = Column(Integer, ForeignKey('entities.id', ondelete='CASCADE'), nullable=False)
     field = Column(String(255), nullable=False)
     regex = Column(Text, nullable=False)
-    when_present = Column(Integer, default=0)
+    when_present = Column(Boolean, default=False)
     
     entity = relationship("Entity", back_populates="constraints")
 
