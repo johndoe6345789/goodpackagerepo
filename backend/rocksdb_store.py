@@ -71,14 +71,16 @@ class RocksDBStore:
             self.stats['cache_misses'] += 1
             return None
     
-    def put(self, key: str, value: Any) -> None:
+    def put(self, key: str, value: Any, _internal: bool = False) -> None:
         """Store value in RocksDB.
         
         Args:
             key: Key to store
             value: Value to store (will be JSON serialized)
+            _internal: If True, don't increment operation counter (internal use)
         """
-        self.stats['operations']['put'] += 1
+        if not _internal:
+            self.stats['operations']['put'] += 1
         
         # Serialize value as JSON
         value_json = json.dumps(value)
@@ -106,7 +108,8 @@ class RocksDBStore:
             except Exception:
                 pass
         
-        self.put(key, value)
+        # Use internal put to avoid double-counting
+        self.put(key, value, _internal=True)
         return True
     
     def delete(self, key: str) -> None:
@@ -210,5 +213,4 @@ class RocksDBStore:
     
     def __del__(self):
         """Cleanup on deletion."""
-        # Note: __del__ is not guaranteed to be called
-        pass
+        self.close()

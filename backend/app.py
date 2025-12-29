@@ -687,14 +687,11 @@ def rocksdb_keys():
         prefix = request.args.get("prefix", None)
         limit = int(request.args.get("limit", "100"))
         
-        keys = kv_store.keys(prefix)
+        # Pass limit to keys() method for efficiency
+        keys = kv_store.keys(prefix, limit=limit)
         
-        # Limit results
-        if len(keys) > limit:
-            keys = keys[:limit]
-            truncated = True
-        else:
-            truncated = False
+        # Check if we hit the limit (might have more keys)
+        truncated = len(keys) == limit
         
         return jsonify({
             "ok": True,
