@@ -1,0 +1,170 @@
+{
+  "description": "Template for common pipeline patterns",
+  "patterns": {
+    "simple_read": {
+      "description": "Simple read operation with authentication and caching",
+      "pipeline": [
+        {
+          "op": "auth.require_scopes",
+          "args": {"scopes": ["read"]}
+        },
+        {
+          "op": "parse.path",
+          "args": {"entity": "artifact"}
+        },
+        {
+          "op": "cache.get",
+          "args": {
+            "kind": "response",
+            "key": "cache_key/{namespace}/{name}",
+            "hit_out": "cache_hit",
+            "value_out": "cached_data"
+          }
+        },
+        {
+          "op": "respond.json",
+          "args": {
+            "when": {"equals": ["$cache_hit", true]},
+            "status": 200,
+            "body": "$cached_data"
+          }
+        },
+        {
+          "op": "kv.get",
+          "args": {
+            "doc": "artifact_meta",
+            "key": "artifact/{namespace}/{name}",
+            "out": "data"
+          }
+        },
+        {
+          "op": "cache.put",
+          "args": {
+            "kind": "response",
+            "key": "cache_key/{namespace}/{name}",
+            "ttl_seconds": 300,
+            "value": "$data"
+          }
+        },
+        {
+          "op": "respond.json",
+          "args": {
+            "status": 200,
+            "body": "$data"
+          }
+        }
+      ]
+    },
+    "transactional_write": {
+      "description": "Write operation with transaction and event emission",
+      "pipeline": [
+        {
+          "op": "auth.require_scopes",
+          "args": {"scopes": ["write"]}
+        },
+        {
+          "op": "parse.path",
+          "args": {"entity": "artifact"}
+        },
+        {
+          "op": "parse.json",
+          "args": {"out": "body"}
+        },
+        {
+          "op": "txn.begin",
+          "args": {"isolation": "serializable"}
+        },
+        {
+          "op": "time.now_iso8601",
+          "args": {"out": "timestamp"}
+        },
+        {
+          "op": "kv.cas_put",
+          "args": {
+            "doc": "artifact_meta",
+            "key": "artifact/{namespace}/{name}",
+            "if_absent": true,
+            "value": {
+              "namespace": "{namespace}",
+              "name": "{name}",
+              "data": "$body",
+              "created_at": "$timestamp"
+            }
+          }
+        },
+        {
+          "op": "emit.event",
+          "args": {
+            "type": "resource.created",
+            "payload": {
+              "namespace": "{namespace}",
+              "name": "{name}",
+              "at": "$timestamp"
+            }
+          }
+        },
+        {
+          "op": "txn.commit",
+          "args": {}
+        },
+        {
+          "op": "respond.json",
+          "args": {
+            "status": 201,
+            "body": {"ok": true}
+          }
+        }
+      ]
+    },
+    "proxy_with_fallback": {
+      "description": "Try local, fallback to upstream proxy",
+      "pipeline": [
+        {
+          "op": "auth.require_scopes",
+          "args": {"scopes": ["read"]}
+        },
+        {
+          "op": "kv.get",
+          "args": {
+            "doc": "artifact_meta",
+            "key": "artifact/{namespace}/{name}",
+            "out": "local_data"
+          }
+        },
+        {
+          "op": "respond.json",
+          "args": {
+            "when": {"is_not_null": "$local_data"},
+            "status": 200,
+            "body": "$local_data"
+          }
+        },
+        {
+          "op": "proxy.fetch",
+          "args": {
+            "upstream": "originA",
+            "method": "GET",
+            "path": "/v1/{namespace}/{name}",
+            "out": "upstream_resp"
+          }
+        },
+        {
+          "op": "respond.error",
+          "args": {
+            "when": {"not_in": ["$upstream_resp.status", [200]]},
+            "status": 502,
+            "code": "UPSTREAM_ERROR",
+            "message": "Upstream fetch failed"
+          }
+        },
+        {
+          "op": "respond.json",
+          "args": {
+            "status": 200,
+            "body": "$upstream_resp.body"
+          }
+        }
+      ]
+    }
+  }
+}

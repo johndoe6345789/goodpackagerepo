@@ -1,0 +1,25 @@
+{
+  "name": "custom_scope",
+  "description": "Custom authentication scope",
+  "actions": [
+    "blob.get",
+    "blob.put",
+    "kv.get",
+    "kv.put",
+    "index.query"
+  ],
+  "examples": [
+    {
+      "use_case": "Read-only scope",
+      "actions": ["blob.get", "kv.get", "index.query"]
+    },
+    {
+      "use_case": "Write-only scope",
+      "actions": ["blob.put", "kv.put", "index.upsert"]
+    },
+    {
+      "use_case": "Admin scope",
+      "actions": ["*"]
+    }
+  ]
+}
