@@ -1,7 +1,7 @@
 Flask==3.0.0
-Flask-CORS==4.0.0
+Flask-CORS==6.0.0
 pyjwt==2.8.0
 rocksdict==0.3.23
-werkzeug==3.0.1
+werkzeug==3.1.4
 jsonschema==4.20.0
 bcrypt==4.1.2
