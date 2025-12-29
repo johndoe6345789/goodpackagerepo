@@ -35,10 +35,14 @@ def check_operation_coverage():
     implemented_ops = set()
     
     for name, method in inspect.getmembers(executor, predicate=inspect.ismethod):
-        if not name.startswith('_'):
-            # Convert method name back to operation name (e.g., kv_get -> kv.get)
-            op_name = name.replace('_', '.', 1)  # Only replace first underscore
-            implemented_ops.add(op_name)
+        if not name.startswith('_') and name != 'execute_pipeline':
+            # Convert method name back to operation name
+            # e.g., auth_require_scopes -> auth.require_scopes
+            # Replace first underscore with dot, keep rest as underscores
+            if '_' in name:
+                category, rest = name.split('_', 1)
+                op_name = f"{category}.{rest}"
+                implemented_ops.add(op_name)
     
     print(f"\nSchema defines {len(allowed_ops)} operations")
     print(f"Implementation provides {len(implemented_ops)} operations\n")

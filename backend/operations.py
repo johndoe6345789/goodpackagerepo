@@ -183,7 +183,7 @@ class OperationExecutor:
         key = ctx.interpolate(key_template)
         
         if if_absent and key in self.kv_store:
-            raise ValueError(f"Key {key} already exists")
+            raise ValueError(f"CAS operation failed: Key '{key}' already exists (if_absent constraint violated)")
         
         self.kv_store[key] = value
     
@@ -354,7 +354,14 @@ class OperationExecutor:
     # ========================================================================
     
     def proxy_fetch(self, ctx: ExecutionContext, args: Dict[str, Any]) -> None:
-        """Fetch from upstream proxy."""
+        """Fetch from upstream proxy.
+        
+        Note: This is a placeholder implementation. In production, this would:
+        1. Look up the upstream configuration from schema
+        2. Make an actual HTTP request with proper timeouts and retries
+        3. Handle authentication based on upstream.auth settings
+        4. Return the actual response
+        """
         upstream = args.get('upstream')
         method = args.get('method', 'GET')
         path_template = args.get('path')
@@ -362,8 +369,16 @@ class OperationExecutor:
         
         path = ctx.interpolate(path_template)
         
-        # In production, would look up upstream config and make actual request
-        # For now, return a mock response
+        # TODO: Implement actual proxy fetch with requests library
+        # upstream_config = get_upstream_config(upstream)
+        # response = requests.request(
+        #     method=method,
+        #     url=upstream_config['base_url'] + path,
+        #     timeout=(upstream_config['timeouts_ms']['connect']/1000, 
+        #              upstream_config['timeouts_ms']['read']/1000)
+        # )
+        
+        # Placeholder response for now
         response = {
             'status': 200,
             'body': None,

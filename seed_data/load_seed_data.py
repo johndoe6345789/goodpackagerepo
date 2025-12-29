@@ -16,6 +16,8 @@ from typing import Dict, Any
 # Configuration
 BACKEND_URL = os.environ.get("BACKEND_URL", "http://localhost:5000")
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+# Security note: Default password should only be used for development/testing
+# In production, require explicit password via environment variable
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
 
 
