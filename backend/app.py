@@ -20,6 +20,7 @@ import jsonschema
 
 import auth_sqlalchemy as auth_module
 import config_db_sqlalchemy as config_db
+from rocksdb_store import RocksDBStore
 
 app = Flask(__name__)
 CORS(app)
@@ -41,14 +42,19 @@ DB_CONFIG = config_db.get_repository_config()
 DATA_DIR = Path(os.environ.get("DATA_DIR", "/tmp/data"))
 BLOB_DIR = DATA_DIR / "blobs"
 META_DIR = DATA_DIR / "meta"
+ROCKSDB_DIR = DATA_DIR / "rocksdb"
 JWT_SECRET = os.environ.get("JWT_SECRET", "dev-secret-key")
 
 # Initialize storage
 BLOB_DIR.mkdir(parents=True, exist_ok=True)
 META_DIR.mkdir(parents=True, exist_ok=True)
+ROCKSDB_DIR.mkdir(parents=True, exist_ok=True)
 
-# Simple in-memory KV store (for MVP, would use RocksDB in production)
-kv_store: Dict[str, Any] = {}
+# RocksDB KV store (replaces in-memory dict)
+kv_store = RocksDBStore(str(ROCKSDB_DIR))
+
+# Index store - currently in-memory, could be migrated to RocksDB in the future
+# for full persistence and consistency across restarts
 index_store: Dict[str, list] = {}
 
 
@@ -468,7 +474,7 @@ def publish_artifact_blob(namespace: str, name: str, version: str, variant: str)
     # Store metadata
     artifact_key = f"artifact/{entity['namespace']}/{entity['name']}/{entity['version']}/{entity['variant']}"
     
-    if artifact_key in kv_store:
+    if kv_store.get(artifact_key) is not None:
         raise RepositoryError("Artifact already exists", 409, "ALREADY_EXISTS")
     
     now = datetime.utcnow().isoformat() + "Z"
@@ -483,7 +489,7 @@ def publish_artifact_blob(namespace: str, name: str, version: str, variant: str)
         "created_by": principal.get("sub", "unknown")
     }
     
-    kv_store[artifact_key] = meta
+    kv_store.put(artifact_key, meta)
     
     # Update index
     index_key = f"{entity['namespace']}/{entity['name']}"
@@ -604,21 +610,21 @@ def set_tag(namespace: str, name: str, tag: str):
     
     # Check if target exists
     target_key = f"artifact/{entity['namespace']}/{entity['name']}/{body['target_version']}/{body['target_variant']}"
-    if target_key not in kv_store:
+    if kv_store.get(target_key) is None:
         raise RepositoryError("Target artifact not found", 404, "TARGET_NOT_FOUND")
     
     # Store tag
     now = datetime.utcnow().isoformat() + "Z"
     tag_key = f"tag/{entity['namespace']}/{entity['name']}/{entity['tag']}"
     
-    kv_store[tag_key] = {
+    kv_store.put(tag_key, {
         "namespace": entity["namespace"],
         "name": entity["name"],
         "tag": entity["tag"],
         "target_key": target_key,
         "updated_at": now,
         "updated_by": principal.get("sub", "unknown")
-    }
+    })
     
     return jsonify({"ok": True})
 
@@ -658,6 +664,262 @@ def health():
 def get_schema():
     """Return the repository schema."""
     return jsonify(SCHEMA)
+
+
+@app.route("/rocksdb/stats", methods=["GET"])
+def rocksdb_stats():
+    """Get RocksDB statistics in JSON format."""
+    try:
+        stats = kv_store.get_stats()
+        return jsonify({
+            "ok": True,
+            "stats": stats
+        })
+    except Exception as e:
+        app.logger.error(f"Error getting RocksDB stats: {e}", exc_info=True)
+        return jsonify({
+            "ok": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route("/rocksdb/keys", methods=["GET"])
+def rocksdb_keys():
+    """List all keys in RocksDB, optionally filtered by prefix."""
+    try:
+        prefix = request.args.get("prefix", None)
+        limit = int(request.args.get("limit", "100"))
+        
+        # Pass limit to keys() method for efficiency
+        keys = kv_store.keys(prefix, limit=limit)
+        
+        # Check if we hit the limit (might have more keys)
+        truncated = len(keys) == limit
+        
+        return jsonify({
+            "ok": True,
+            "keys": keys,
+            "count": len(keys),
+            "truncated": truncated,
+            "prefix": prefix
+        })
+    except Exception as e:
+        app.logger.error(f"Error listing RocksDB keys: {e}", exc_info=True)
+        return jsonify({
+            "ok": False,
+            "error": str(e)
+        }), 500
+
+
+@app.route("/rocksdb/dashboard", methods=["GET"])
+def rocksdb_dashboard():
+    """RocksDB monitoring dashboard with HTML interface."""
+    try:
+        stats = kv_store.get_stats()
+        
+        # Sample some keys for display (limit to avoid loading all keys)
+        sample_keys = kv_store.keys(limit=20)
+        total_keys = stats['total_keys']
+        
+        html = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RocksDB Dashboard</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }}
+        h1 {{
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }}
+        h2 {{
+            color: #555;
+            margin-top: 30px;
+        }}
+        .stats-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }}
+        .stat-card {{
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }}
+        .stat-card h3 {{
+            margin: 0 0 10px 0;
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+        }}
+        .stat-value {{
+            font-size: 32px;
+            font-weight: bold;
+            color: #4CAF50;
+        }}
+        .stat-label {{
+            color: #999;
+            font-size: 12px;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }}
+        th, td {{
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }}
+        th {{
+            background: #4CAF50;
+            color: white;
+        }}
+        .operations-table {{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }}
+        .operation-item {{
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }}
+        .key-sample {{
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #333;
+        }}
+        .refresh-btn {{
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px 0;
+        }}
+        .refresh-btn:hover {{
+            background: #45a049;
+        }}
+    </style>
+</head>
+<body>
+    <h1>🗄️ RocksDB Dashboard</h1>
+    
+    <button class="refresh-btn" onclick="location.reload()">🔄 Refresh</button>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Keys</h3>
+            <div class="stat-value">{stats['total_keys']:,}</div>
+            <div class="stat-label">stored in database</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Total Operations</h3>
+            <div class="stat-value">{stats['total_operations']:,}</div>
+            <div class="stat-label">since startup</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Ops/Second</h3>
+            <div class="stat-value">{stats['ops_per_second']:.2f}</div>
+            <div class="stat-label">average throughput</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>Cache Hit Rate</h3>
+            <div class="stat-value">{stats['cache_stats']['hit_rate_percent']:.1f}%</div>
+            <div class="stat-label">{stats['cache_stats']['hits']:,} hits / {stats['cache_stats']['misses']:,} misses</div>
+        </div>
+    </div>
+    
+    <h2>📊 Operations Breakdown</h2>
+    <div class="operations-table">
+        <div class="operation-item">
+            <strong>GET Operations:</strong> {stats['operations']['get']:,}
+        </div>
+        <div class="operation-item">
+            <strong>PUT Operations:</strong> {stats['operations']['put']:,}
+        </div>
+        <div class="operation-item">
+            <strong>DELETE Operations:</strong> {stats['operations']['delete']:,}
+        </div>
+        <div class="operation-item">
+            <strong>CAS PUT Operations:</strong> {stats['operations']['cas_put']:,}
+        </div>
+    </div>
+    
+    <h2>🔑 Sample Keys ({len(sample_keys)} of {total_keys})</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Key</th>
+            </tr>
+        </thead>
+        <tbody>
+        """
+        
+        for i, key in enumerate(sample_keys, 1):
+            html += f"""
+            <tr>
+                <td>{i}</td>
+                <td class="key-sample">{key}</td>
+            </tr>
+            """
+        
+        html += f"""
+        </tbody>
+    </table>
+    
+    <h2>ℹ️ System Information</h2>
+    <table>
+        <tr>
+            <th>Property</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Database Path</td>
+            <td class="key-sample">{stats['database_path']}</td>
+        </tr>
+        <tr>
+            <td>Uptime</td>
+            <td>{stats['uptime_seconds']:.2f} seconds ({stats['uptime_seconds']/60:.1f} minutes)</td>
+        </tr>
+    </table>
+    
+    <p style="text-align: center; color: #999; margin-top: 40px;">
+        RocksDB HTTP Dashboard | Refresh this page to see updated stats
+    </p>
+</body>
+</html>
+        """
+        
+        return Response(html, mimetype='text/html')
+        
+    except Exception as e:
+        app.logger.error(f"Error rendering RocksDB dashboard: {e}", exc_info=True)
+        return jsonify({
+            "ok": False,
+            "error": str(e)
+        }), 500
 
 
 @app.errorhandler(RepositoryError)

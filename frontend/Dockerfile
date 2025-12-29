@@ -16,6 +16,9 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Ensure public directory exists (Next.js may not create it if no static assets)
+RUN mkdir -p public
+
 RUN npm run build
 
 # Production image, copy all the files and run next
