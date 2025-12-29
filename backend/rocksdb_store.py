@@ -105,8 +105,11 @@ class RocksDBStore:
                 value_bytes = self.db.get(key.encode('utf-8'))
                 if value_bytes is not None:
                     return False
-            except Exception:
-                pass
+            except KeyError:
+                pass  # Key doesn't exist
+            except Exception as e:
+                # Log unexpected errors but continue with put operation
+                print(f"Warning: Error checking key existence in cas_put: {e}")
         
         # Use internal put to avoid double-counting
         self.put(key, value, _internal=True)
@@ -160,9 +163,12 @@ class RocksDBStore:
             
         Returns:
             Number of keys
+            
+        Note:
+            This method iterates through all keys, which can be expensive for large
+            datasets. In production, consider maintaining separate counters updated
+            during put/delete operations for better performance.
         """
-        # For accurate counts, we need to iterate
-        # In production, consider maintaining separate counters
         count = 0
         
         if prefix:

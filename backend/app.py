@@ -52,6 +52,9 @@ ROCKSDB_DIR.mkdir(parents=True, exist_ok=True)
 
 # RocksDB KV store (replaces in-memory dict)
 kv_store = RocksDBStore(str(ROCKSDB_DIR))
+
+# Index store - currently in-memory, could be migrated to RocksDB in the future
+# for full persistence and consistency across restarts
 index_store: Dict[str, list] = {}
 
 
