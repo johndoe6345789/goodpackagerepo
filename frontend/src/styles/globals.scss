@@ -1,0 +1,72 @@
+@import './variables';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  font-family: $font-family;
+  font-size: $font-size-body1;
+  color: $text-primary;
+  background: $background-color;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+h1 { font-size: $font-size-h4; }
+h2 { font-size: $font-size-h5; }
+h3 { font-size: $font-size-h6; }
+h4 { font-size: $font-size-subtitle1; }
+h5 { font-size: $font-size-subtitle2; }
+h6 { font-size: $font-size-body1; }
+
+a {
+  color: $primary-color;
+  text-decoration: none;
+  transition: color $transition-duration $transition-easing;
+  
+  &:hover {
+    color: $primary-dark;
+    text-decoration: underline;
+  }
+}
+
+button {
+  @include button-base;
+}
+
+input,
+textarea,
+select {
+  @include input-base;
+}
+
+code {
+  font-family: $font-family-mono;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: $border-radius-sm;
+  font-size: 0.9em;
+}
+
+pre {
+  background: rgba(0, 0, 0, 0.05);
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  overflow-x: auto;
+  
+  code {
+    background: none;
+    padding: 0;
+  }
+}

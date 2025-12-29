@@ -1,0 +1,143 @@
+// Material Design-inspired color palette
+$primary-color: #1976d2;
+$primary-light: #42a5f5;
+$primary-dark: #1565c0;
+$secondary-color: #dc004e;
+$secondary-light: #f50057;
+$secondary-dark: #c51162;
+
+$background-color: #fafafa;
+$surface-color: #ffffff;
+$error-color: #f44336;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$info-color: #2196f3;
+
+$text-primary: rgba(0, 0, 0, 0.87);
+$text-secondary: rgba(0, 0, 0, 0.54);
+$text-disabled: rgba(0, 0, 0, 0.38);
+$text-hint: rgba(0, 0, 0, 0.38);
+
+// Spacing
+$spacing-unit: 8px;
+$spacing-xs: $spacing-unit;
+$spacing-sm: $spacing-unit * 2;
+$spacing-md: $spacing-unit * 3;
+$spacing-lg: $spacing-unit * 4;
+$spacing-xl: $spacing-unit * 6;
+
+// Typography
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  sans-serif;
+$font-family-mono: 'Courier New', Courier, monospace;
+
+$font-size-h1: 96px;
+$font-size-h2: 60px;
+$font-size-h3: 48px;
+$font-size-h4: 34px;
+$font-size-h5: 24px;
+$font-size-h6: 20px;
+$font-size-subtitle1: 16px;
+$font-size-subtitle2: 14px;
+$font-size-body1: 16px;
+$font-size-body2: 14px;
+$font-size-button: 14px;
+$font-size-caption: 12px;
+$font-size-overline: 10px;
+
+// Elevation (shadows)
+$elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+$elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+$elevation-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+$elevation-4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+$elevation-5: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+
+// Border radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 16px;
+
+// Transitions
+$transition-duration: 0.3s;
+$transition-easing: cubic-bezier(0.4, 0.0, 0.2, 1);
+
+// Mixins
+@mixin elevation($level: 1) {
+  @if $level == 1 {
+    box-shadow: $elevation-1;
+  } @else if $level == 2 {
+    box-shadow: $elevation-2;
+  } @else if $level == 3 {
+    box-shadow: $elevation-3;
+  } @else if $level == 4 {
+    box-shadow: $elevation-4;
+  } @else if $level == 5 {
+    box-shadow: $elevation-5;
+  }
+}
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm $spacing-md;
+  border: none;
+  border-radius: $border-radius-sm;
+  font-family: $font-family;
+  font-size: $font-size-button;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all $transition-duration $transition-easing;
+  outline: none;
+  
+  &:hover {
+    @include elevation(2);
+  }
+  
+  &:active {
+    @include elevation(1);
+  }
+  
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+@mixin card {
+  background: $surface-color;
+  border-radius: $border-radius-md;
+  @include elevation(1);
+  transition: box-shadow $transition-duration $transition-easing;
+  
+  &:hover {
+    @include elevation(2);
+  }
+}
+
+@mixin input-base {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: $border-radius-sm;
+  font-family: $font-family;
+  font-size: $font-size-body1;
+  color: $text-primary;
+  background: $surface-color;
+  transition: all $transition-duration $transition-easing;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+  }
+  
+  &:disabled {
+    background: rgba(0, 0, 0, 0.05);
+    color: $text-disabled;
+    cursor: not-allowed;
+  }
+}

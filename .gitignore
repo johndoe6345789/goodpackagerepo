@@ -1,3 +1,17 @@
+# Node modules
+node_modules/
+package-lock.json
+
+# Build output
+.next/
+out/
+
+# SQLite databases
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

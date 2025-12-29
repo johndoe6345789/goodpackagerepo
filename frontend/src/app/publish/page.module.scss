@@ -1,0 +1,94 @@
+@import '../../styles/variables';
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: $spacing-xl $spacing-lg;
+}
+
+.header {
+  margin-bottom: $spacing-xl;
+  
+  h1 {
+    font-size: $font-size-h3;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.form {
+  @include card;
+  padding: $spacing-xl;
+  
+  &__group {
+    margin-bottom: $spacing-lg;
+  }
+  
+  &__label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: $spacing-sm;
+    color: $text-primary;
+  }
+  
+  &__input {
+    @include input-base;
+  }
+  
+  &__help {
+    font-size: $font-size-caption;
+    color: $text-secondary;
+    margin-top: $spacing-xs;
+  }
+  
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: flex-end;
+    margin-top: $spacing-xl;
+  }
+}
+
+.button {
+  @include button-base;
+  
+  &--primary {
+    background: $primary-color;
+    color: white;
+    
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+  
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+    
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+}
+
+.fileInput {
+  @include input-base;
+  padding: $spacing-md;
+  cursor: pointer;
+}
+
+.success {
+  @include card;
+  padding: $spacing-lg;
+  background: rgba(76, 175, 80, 0.1);
+  border-left: 4px solid $success-color;
+  margin-bottom: $spacing-lg;
+}
+
+.error {
+  @include card;
+  padding: $spacing-lg;
+  background: rgba(244, 67, 54, 0.1);
+  border-left: 4px solid $error-color;
+  margin-bottom: $spacing-lg;
+}

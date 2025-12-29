@@ -1,0 +1,138 @@
+@import '../../styles/variables';
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: $spacing-xl $spacing-lg;
+}
+
+.header {
+  margin-bottom: $spacing-xl;
+  
+  h1 {
+    font-size: $font-size-h3;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.section {
+  @include card;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  
+  &__title {
+    font-size: $font-size-h6;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    &Label {
+      font-weight: 500;
+      color: $text-secondary;
+    }
+    
+    &Value {
+      color: $text-primary;
+    }
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+  
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+  
+  &__label {
+    font-weight: 500;
+    color: $text-primary;
+  }
+  
+  &__input {
+    @include input-base;
+  }
+  
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: flex-end;
+  }
+}
+
+.button {
+  @include button-base;
+  
+  &--primary {
+    background: $primary-color;
+    color: white;
+    
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+  
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+    
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+  
+  &--danger {
+    background: $error-color;
+    color: white;
+    
+    &:hover {
+      background: darken($error-color, 10%);
+    }
+  }
+}
+
+.alert {
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  margin-bottom: $spacing-lg;
+  
+  &--error {
+    background: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid $error-color;
+    color: darken($error-color, 20%);
+  }
+  
+  &--success {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid $success-color;
+    color: darken($success-color, 20%);
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(25, 118, 210, 0.1);
+  color: $primary-dark;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-caption;
+  font-weight: 500;
+  margin-left: $spacing-xs;
+}
