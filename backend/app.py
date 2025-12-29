@@ -18,6 +18,7 @@ from werkzeug.exceptions import HTTPException
 import jsonschema
 
 import auth as auth_module
+import config_db
 
 app = Flask(__name__)
 CORS(app)
@@ -225,6 +226,171 @@ def get_current_user():
         })
     except:
         raise RepositoryError("Invalid token", 401, "UNAUTHORIZED")
+
+
+@app.route("/admin/config", methods=["GET"])
+def get_admin_config():
+    """Get repository configuration from database."""
+    # Must be admin
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        raise RepositoryError("Missing authorization", 401, "UNAUTHORIZED")
+    
+    token = auth_header[7:]
+    try:
+        principal = verify_token(token)
+        if 'admin' not in principal.get('scopes', []):
+            raise RepositoryError("Admin access required", 403, "FORBIDDEN")
+    except:
+        raise RepositoryError("Invalid token", 401, "UNAUTHORIZED")
+    
+    config = config_db.get_repository_config()
+    if not config:
+        raise RepositoryError("No configuration found", 404, "NOT_FOUND")
+    
+    return jsonify({"ok": True, "config": config})
+
+
+@app.route("/admin/entities", methods=["GET"])
+def list_entities():
+    """List all entities."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    config = config_db.get_repository_config()
+    if not config:
+        raise RepositoryError("No configuration found", 404, "NOT_FOUND")
+    
+    return jsonify({"ok": True, "entities": config.get('entities', [])})
+
+
+@app.route("/admin/entities", methods=["POST"])
+def create_entity():
+    """Create a new entity."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    try:
+        data = request.get_json()
+        if not data or 'name' not in data:
+            raise RepositoryError("Missing entity name", 400, "INVALID_REQUEST")
+        
+        # TODO: Implement entity creation in config_db
+        return jsonify({"ok": True, "message": "Entity creation not yet implemented"})
+    except RepositoryError:
+        raise
+    except Exception as e:
+        raise RepositoryError(f"Failed to create entity: {str(e)}", 500, "CREATION_ERROR")
+
+
+@app.route("/admin/routes", methods=["GET"])
+def list_routes():
+    """List all API routes."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    config = config_db.get_repository_config()
+    if not config:
+        raise RepositoryError("No configuration found", 404, "NOT_FOUND")
+    
+    return jsonify({"ok": True, "routes": config.get('api_routes', [])})
+
+
+@app.route("/admin/routes", methods=["POST"])
+def create_route():
+    """Create a new API route."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    try:
+        data = request.get_json()
+        if not data or 'route_id' not in data:
+            raise RepositoryError("Missing route_id", 400, "INVALID_REQUEST")
+        
+        # TODO: Implement route creation in config_db
+        return jsonify({"ok": True, "message": "Route creation not yet implemented"})
+    except RepositoryError:
+        raise
+    except Exception as e:
+        raise RepositoryError(f"Failed to create route: {str(e)}", 500, "CREATION_ERROR")
+
+
+@app.route("/admin/blob-stores", methods=["GET"])
+def list_blob_stores():
+    """List all blob stores."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    config = config_db.get_repository_config()
+    if not config:
+        raise RepositoryError("No configuration found", 404, "NOT_FOUND")
+    
+    return jsonify({"ok": True, "blob_stores": config.get('blob_stores', [])})
+
+
+@app.route("/admin/blob-stores", methods=["POST"])
+def create_blob_store():
+    """Create a new blob store."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    try:
+        data = request.get_json()
+        if not data or 'name' not in data:
+            raise RepositoryError("Missing store name", 400, "INVALID_REQUEST")
+        
+        # TODO: Implement blob store creation in config_db
+        return jsonify({"ok": True, "message": "Blob store creation not yet implemented"})
+    except RepositoryError:
+        raise
+    except Exception as e:
+        raise RepositoryError(f"Failed to create blob store: {str(e)}", 500, "CREATION_ERROR")
+
+
+@app.route("/admin/auth/scopes", methods=["GET"])
+def list_auth_scopes():
+    """List all auth scopes."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    config = config_db.get_repository_config()
+    if not config:
+        raise RepositoryError("No configuration found", 404, "NOT_FOUND")
+    
+    return jsonify({"ok": True, "scopes": config.get('auth_scopes', [])})
+
+
+@app.route("/admin/features", methods=["GET"])
+def get_features():
+    """Get features configuration."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    config = config_db.get_repository_config()
+    if not config:
+        raise RepositoryError("No configuration found", 404, "NOT_FOUND")
+    
+    return jsonify({"ok": True, "features": config.get('features', {})})
+
+
+@app.route("/admin/features", methods=["PUT"])
+def update_features():
+    """Update features configuration."""
+    # Must be admin
+    principal = require_scopes(["admin"])
+    
+    try:
+        data = request.get_json()
+        if not data:
+            raise RepositoryError("Missing request body", 400, "INVALID_REQUEST")
+        
+        # TODO: Implement features update in config_db
+        return jsonify({"ok": True, "message": "Features update not yet implemented"})
+    except RepositoryError:
+        raise
+    except Exception as e:
+        raise RepositoryError(f"Failed to update features: {str(e)}", 500, "UPDATE_ERROR")
+
 
 
 @app.route("/v1/<namespace>/<name>/<version>/<variant>/blob", methods=["PUT"])
@@ -483,4 +649,6 @@ def handle_exception(error):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Only enable debug mode if explicitly set in environment
+    debug_mode = os.environ.get("FLASK_DEBUG", "False").lower() == "true"
+    app.run(host="0.0.0.0", port=5000, debug=debug_mode)
