@@ -1,0 +1,22 @@
+{
+  "name": "my_blob_store",
+  "kind": "filesystem",
+  "root": "/data/blobs",
+  "addressing": {
+    "mode": "content_addressed",
+    "digest": "sha256",
+    "path_template": "sha256/{digest:0:2}/{digest:2:2}/{digest}",
+    "description": "Content-addressed storage with 2-level directory sharding"
+  },
+  "limits": {
+    "max_blob_bytes": 2147483648,
+    "min_blob_bytes": 0,
+    "description": "Max 2GB per blob"
+  },
+  "features": {
+    "compression": false,
+    "encryption": false,
+    "deduplication": true,
+    "description": "Deduplication via content addressing"
+  }
+}

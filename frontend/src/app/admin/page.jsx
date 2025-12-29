@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.scss';
+import { getOperationLabel, getOperationDescription, getOperationCategory, getCategoryColor } from '../../utils/operations';
 
 export default function AdminPage() {
   const router = useRouter();
@@ -10,6 +11,7 @@ export default function AdminPage() {
   const [config, setConfig] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
+  const [expandedRoute, setExpandedRoute] = useState(null);
 
   useEffect(() => {
     // Check if user is logged in and has admin scope
@@ -407,44 +409,131 @@ export default function AdminPage() {
           </h2>
           <div className={styles.section__content}>
             {config.api_routes && config.api_routes.length > 0 ? (
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th style={{ width: '20%' }}>ID</th>
-                    <th style={{ width: '10%' }}>Method</th>
-                    <th style={{ width: '30%' }}>Path</th>
-                    <th style={{ width: '20%' }}>Tags</th>
-                    <th style={{ width: '10%' }}>Pipeline</th>
-                    <th style={{ width: '10%' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {config.api_routes.map((route, i) => (
-                    <tr key={i}>
-                      <td><strong>{route.route_id}</strong></td>
-                      <td>
-                        <span className={`${styles.badge} ${styles['badge--primary']}`}>
-                          {route.method}
-                        </span>
-                      </td>
-                      <td><code>{route.path}</code></td>
-                      <td>
-                        {JSON.parse(route.tags || '[]').map((tag, j) => (
-                          <span key={j} className={`${styles.badge} ${styles['badge--success']}`}>
-                            {tag}
+              config.api_routes.map((route, i) => {
+                const pipeline = JSON.parse(route.pipeline || '[]');
+                const isExpanded = expandedRoute === i;
+                
+                return (
+                  <div key={i} className={styles.entityCard} style={{ marginBottom: '16px' }}>
+                    <div className={styles.entityCard__header}>
+                      <div style={{ flex: 1 }}>
+                        <div className={styles.entityCard__name}>{route.route_id}</div>
+                        <div className={styles.entityCard__details}>
+                          <span className={`${styles.badge} ${styles['badge--primary']}`}>
+                            {route.method}
                           </span>
-                        ))}
-                      </td>
-                      <td>{JSON.parse(route.pipeline || '[]').length} steps</td>
-                      <td>
+                          {' '}
+                          <code>{route.path}</code>
+                          {' • '}
+                          {JSON.parse(route.tags || '[]').map((tag, j) => (
+                            <span key={j} className={`${styles.badge} ${styles['badge--success']}`}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className={styles.entityCard__actions}>
+                        <button 
+                          className={`${styles.button} ${styles['button--secondary']} ${styles['button--small']}`}
+                          onClick={() => setExpandedRoute(isExpanded ? null : i)}
+                        >
+                          {isExpanded ? '▼ Hide' : '▶ View'} Pipeline ({pipeline.length} steps)
+                        </button>
                         <button className={`${styles.button} ${styles['button--secondary']} ${styles['button--small']}`}>
                           Edit
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      </div>
+                    </div>
+                    
+                    {isExpanded && pipeline.length > 0 && (
+                      <div style={{ marginTop: '16px', borderTop: '1px solid #e0e0e0', paddingTop: '16px' }}>
+                        <h4 style={{ marginBottom: '12px', color: '#666', fontSize: '14px' }}>
+                          Pipeline Operations (showing in plain English)
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {pipeline.map((step, j) => {
+                            const operation = step.op;
+                            const label = getOperationLabel(operation);
+                            const description = getOperationDescription(operation);
+                            const category = getOperationCategory(operation);
+                            const categoryColor = getCategoryColor(category);
+                            
+                            return (
+                              <div 
+                                key={j} 
+                                style={{ 
+                                  display: 'flex',
+                                  alignItems: 'start',
+                                  padding: '12px',
+                                  background: '#f9f9f9',
+                                  borderRadius: '6px',
+                                  borderLeft: `4px solid ${categoryColor}`
+                                }}
+                              >
+                                <div style={{ 
+                                  minWidth: '30px',
+                                  height: '30px',
+                                  borderRadius: '50%',
+                                  background: categoryColor,
+                                  color: 'white',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontWeight: 'bold',
+                                  fontSize: '14px',
+                                  marginRight: '12px',
+                                  flexShrink: 0
+                                }}>
+                                  {j + 1}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                                    <strong style={{ fontSize: '15px' }}>{label}</strong>
+                                    <span 
+                                      className={styles.badge}
+                                      style={{ 
+                                        background: categoryColor, 
+                                        color: 'white',
+                                        fontSize: '11px',
+                                        padding: '2px 8px'
+                                      }}
+                                    >
+                                      {category}
+                                    </span>
+                                  </div>
+                                  <div style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>
+                                    {description}
+                                  </div>
+                                  <details style={{ fontSize: '12px', color: '#888' }}>
+                                    <summary style={{ cursor: 'pointer', userSelect: 'none' }}>
+                                      Technical details (operation: <code>{operation}</code>)
+                                    </summary>
+                                    <div style={{ 
+                                      marginTop: '8px',
+                                      padding: '8px',
+                                      background: '#fff',
+                                      borderRadius: '4px',
+                                      border: '1px solid #e0e0e0'
+                                    }}>
+                                      <pre style={{ 
+                                        margin: 0,
+                                        fontSize: '11px',
+                                        overflow: 'auto'
+                                      }}>
+                                        {JSON.stringify(step, null, 2)}
+                                      </pre>
+                                    </div>
+                                  </details>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             ) : (
               <div className={styles.empty}>
                 <div className={styles.empty__icon}>🛣️</div>

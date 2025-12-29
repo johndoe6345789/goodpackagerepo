@@ -46,6 +46,36 @@ npm install
 npm run dev
 ```
 
+## Seed Data and Templates
+
+### Load Example Data
+
+To populate your repository with example packages for testing:
+
+```bash
+cd seed_data
+pip install requests
+python load_seed_data.py
+```
+
+This loads sample packages including:
+- `acme/hello-world` - Multi-version example with multiple variants
+- `example/webapp` - Web application containers
+- `tools/cli-tool` - CLI tool example
+- `libs/utility` - Library with prerelease versions
+
+### Templates
+
+The `templates/` directory contains reusable templates for:
+- **Entity definitions** - Define new data models
+- **API routes** - Create custom endpoints
+- **Pipeline patterns** - Common operation sequences
+- **Blob stores** - Configure storage backends
+- **Auth scopes** - Define permission sets
+- **Upstream proxies** - Configure external repositories
+
+See `templates/README.md` for the complete operation vocabulary and usage examples.
+
 ## Documentation
 
 Complete documentation is available at `/docs` when running the application, including:
@@ -54,6 +84,7 @@ Complete documentation is available at `/docs` when running the application, inc
 - CapRover Deployment Instructions
 - API Usage Examples
 - Schema Configuration
+- Operation Vocabulary Reference
 
 ## Testing
 

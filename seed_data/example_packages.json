@@ -1,0 +1,158 @@
+{
+  "packages": [
+    {
+      "namespace": "acme",
+      "name": "hello-world",
+      "version": "1.0.0",
+      "variant": "linux-amd64",
+      "description": "Simple hello world application for Linux AMD64",
+      "content": "Hello World v1.0.0 - This is a sample package blob content",
+      "labels": {
+        "platform": "linux",
+        "arch": "amd64",
+        "language": "go"
+      }
+    },
+    {
+      "namespace": "acme",
+      "name": "hello-world",
+      "version": "1.1.0",
+      "variant": "linux-amd64",
+      "description": "Hello world application v1.1.0 with bug fixes",
+      "content": "Hello World v1.1.0 - Updated with bug fixes and improvements",
+      "labels": {
+        "platform": "linux",
+        "arch": "amd64",
+        "language": "go"
+      }
+    },
+    {
+      "namespace": "acme",
+      "name": "hello-world",
+      "version": "2.0.0",
+      "variant": "linux-amd64",
+      "description": "Hello world application v2.0.0 - major rewrite",
+      "content": "Hello World v2.0.0 - Complete rewrite with new features",
+      "labels": {
+        "platform": "linux",
+        "arch": "amd64",
+        "language": "rust"
+      }
+    },
+    {
+      "namespace": "acme",
+      "name": "hello-world",
+      "version": "2.0.0",
+      "variant": "darwin-arm64",
+      "description": "Hello world application v2.0.0 for macOS ARM64",
+      "content": "Hello World v2.0.0 - macOS ARM64 version",
+      "labels": {
+        "platform": "darwin",
+        "arch": "arm64",
+        "language": "rust"
+      }
+    },
+    {
+      "namespace": "example",
+      "name": "webapp",
+      "version": "0.1.0",
+      "variant": "container",
+      "description": "Simple web application container",
+      "content": "WebApp v0.1.0 - Container image with Node.js application",
+      "labels": {
+        "type": "container",
+        "runtime": "nodejs",
+        "framework": "express"
+      }
+    },
+    {
+      "namespace": "example",
+      "name": "webapp",
+      "version": "0.2.0",
+      "variant": "container",
+      "description": "Web application v0.2.0 with new features",
+      "content": "WebApp v0.2.0 - Added authentication and database support",
+      "labels": {
+        "type": "container",
+        "runtime": "nodejs",
+        "framework": "express",
+        "features": "auth,database"
+      }
+    },
+    {
+      "namespace": "tools",
+      "name": "cli-tool",
+      "version": "3.0.0",
+      "variant": "universal",
+      "description": "Universal CLI tool for multiple platforms",
+      "content": "CLI Tool v3.0.0 - Cross-platform command line utility",
+      "labels": {
+        "type": "cli",
+        "platform": "universal"
+      }
+    },
+    {
+      "namespace": "libs",
+      "name": "utility",
+      "version": "1.0.0-beta",
+      "variant": "npm",
+      "description": "Utility library beta version",
+      "content": "Utility Library v1.0.0-beta - NPM package for JavaScript utilities",
+      "labels": {
+        "type": "library",
+        "ecosystem": "npm",
+        "language": "javascript"
+      }
+    },
+    {
+      "namespace": "libs",
+      "name": "utility",
+      "version": "1.0.0",
+      "variant": "npm",
+      "description": "Utility library stable release",
+      "content": "Utility Library v1.0.0 - Stable NPM package for JavaScript utilities",
+      "labels": {
+        "type": "library",
+        "ecosystem": "npm",
+        "language": "javascript"
+      }
+    }
+  ],
+  "tags": [
+    {
+      "namespace": "acme",
+      "name": "hello-world",
+      "tag": "latest",
+      "target_version": "2.0.0",
+      "target_variant": "linux-amd64"
+    },
+    {
+      "namespace": "acme",
+      "name": "hello-world",
+      "tag": "stable",
+      "target_version": "1.1.0",
+      "target_variant": "linux-amd64"
+    },
+    {
+      "namespace": "example",
+      "name": "webapp",
+      "tag": "latest",
+      "target_version": "0.2.0",
+      "target_variant": "container"
+    },
+    {
+      "namespace": "tools",
+      "name": "cli-tool",
+      "tag": "latest",
+      "target_version": "3.0.0",
+      "target_variant": "universal"
+    },
+    {
+      "namespace": "libs",
+      "name": "utility",
+      "tag": "latest",
+      "target_version": "1.0.0",
+      "target_variant": "npm"
+    }
+  ]
+}
