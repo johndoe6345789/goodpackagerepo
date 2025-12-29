@@ -6,8 +6,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application
-COPY app.py .
+# Copy application files
+COPY app.py auth.py ./
 
 # Copy schema from parent directory
 COPY ../schema.json /app/schema.json
