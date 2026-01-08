@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.scss';
+import { getApiUrl } from '../../utils/api';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -50,7 +51,7 @@ export default function AccountPage() {
     setLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = getApiUrl();
       const token = localStorage.getItem('token');
       
       const response = await fetch(`${apiUrl}/auth/change-password`, {

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.scss';
 import { getOperationLabel, getOperationDescription, getOperationCategory, getCategoryColor } from '../../utils/operations';
+import { getApiUrl } from '../../utils/api';
 
 export default function AdminPage() {
   const router = useRouter();
@@ -37,7 +38,7 @@ export default function AdminPage() {
 
   const fetchConfig = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = getApiUrl();
       const token = localStorage.getItem('token');
       const response = await fetch(`${apiUrl}/admin/config`, {
         headers: {
