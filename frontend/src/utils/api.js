@@ -24,6 +24,8 @@
  */
 export function getApiUrl() {
   // Check for environment variable first (preferred for production)
+  // Note: We check for undefined (not set) vs empty string (set to "")
+  // Empty string is a valid value that enables Next.js rewrites proxy mode
   if (process.env.NEXT_PUBLIC_API_URL !== undefined) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
