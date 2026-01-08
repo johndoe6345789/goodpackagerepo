@@ -155,7 +155,7 @@ You should see a response about missing credentials (this is expected).
    NODE_ENV=production
    PORT=3000
    ```
-   This option allows the frontend to proxy `/auth/*`, `/api/*`, and `/v1/*` requests to the backend internally.
+   This option allows the frontend to proxy `/auth/*`, `/v1/*`, `/admin/*`, `/health`, and `/schema` requests to the backend internally.
    With this setup, users access everything through the frontend domain (e.g., `https://repo.wardcrew.com/auth/login`).
    **Important**: Replace `goodrepo-backend` with your actual backend app name in CapRover.
 

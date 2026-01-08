@@ -141,11 +141,11 @@ Images are automatically built and pushed to GitHub Container Registry (GHCR) on
 
 ### API Access
 
-**Docker Compose**: Backend is on `http://localhost:5000`, frontend proxies API requests automatically.
+**Docker Compose**: Backend is on `http://localhost:5000`, frontend on `http://localhost:3000` proxies API requests automatically.
 
 **Production Deployments**: Two options:
 1. **Separate domains**: Set `NEXT_PUBLIC_API_URL` to backend URL (e.g., `https://api.example.com`)
-2. **Single domain with proxy**: Set `NEXT_PUBLIC_API_URL=""` and `BACKEND_URL` to internal backend address. Access all routes through the frontend domain (e.g., `https://repo.example.com/auth/login`)
+2. **Single domain with proxy**: Set `NEXT_PUBLIC_API_URL=""` and `BACKEND_URL` to internal backend address. The frontend proxies `/auth/*`, `/v1/*`, `/admin/*`, `/health`, and `/schema` routes to the backend. Access all routes through the frontend domain (e.g., `https://repo.example.com/auth/login`)
 
 ## Schema Configuration
 
