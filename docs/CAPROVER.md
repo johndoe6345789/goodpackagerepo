@@ -138,15 +138,26 @@ You should see a response about missing credentials (this is expected).
 
 2. Go to **"App Configs"** tab
 
-3. Add the following environment variable:
+3. Add the following environment variables:
 
+   **Option 1: Separate Backend Domain (Traditional)**
    ```
    NEXT_PUBLIC_API_URL=https://goodrepo-backend.your-domain.com
    NODE_ENV=production
    PORT=3000
    ```
-
    **Important**: Replace `goodrepo-backend.your-domain.com` with your actual backend URL from step 1.
+
+   **Option 2: Single Domain with Next.js Proxy (New)**
+   ```
+   NEXT_PUBLIC_API_URL=
+   BACKEND_URL=http://goodrepo-backend:5000
+   NODE_ENV=production
+   PORT=3000
+   ```
+   This option allows the frontend to proxy `/auth/*`, `/api/*`, and `/v1/*` requests to the backend internally.
+   With this setup, users access everything through the frontend domain (e.g., `https://repo.wardcrew.com/auth/login`).
+   **Important**: Replace `goodrepo-backend` with your actual backend app name in CapRover.
 
 4. Click **"Save & Update"**
 
@@ -224,12 +235,21 @@ After deployment, verify everything is working:
 
 ### 1. Test Backend API
 
+**If using Option 1 (Separate Backend Domain):**
 ```bash
 # Health check (if implemented)
 curl https://goodrepo-backend.your-domain.com/
 
 # Login endpoint
 curl -X POST https://goodrepo-backend.your-domain.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin"}'
+```
+
+**If using Option 2 (Single Domain with Next.js Proxy):**
+```bash
+# Login endpoint through frontend proxy
+curl -X POST https://goodrepo-frontend.your-domain.com/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "admin"}'
 ```
@@ -242,6 +262,7 @@ curl -X POST https://goodrepo-backend.your-domain.com/auth/login \
 
 ### 3. Test Package Upload
 
+**If using Option 1 (Separate Backend Domain):**
 ```bash
 # Login to get token
 TOKEN=$(curl -X POST https://goodrepo-backend.your-domain.com/auth/login \
@@ -251,6 +272,21 @@ TOKEN=$(curl -X POST https://goodrepo-backend.your-domain.com/auth/login \
 # Upload a test package
 echo "test content" > test.txt
 curl -X PUT "https://goodrepo-backend.your-domain.com/v1/test/package/1.0.0/default/blob" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/octet-stream" \
+  --data-binary @test.txt
+```
+
+**If using Option 2 (Single Domain with Next.js Proxy):**
+```bash
+# Login to get token through frontend proxy
+TOKEN=$(curl -X POST https://goodrepo-frontend.your-domain.com/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin"}' | jq -r '.token')
+
+# Upload a test package through frontend proxy
+echo "test content" > test.txt
+curl -X PUT "https://goodrepo-frontend.your-domain.com/v1/test/package/1.0.0/default/blob" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/octet-stream" \
   --data-binary @test.txt
