@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import styles from './page.module.scss';
+import { getApiUrl } from '../../utils/api';
 
 export default function PublishPage() {
   const [formData, setFormData] = useState({
@@ -27,7 +28,7 @@ export default function PublishPage() {
     setStatus({ type: null, message: '' });
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const apiUrl = getApiUrl();
       const url = `${apiUrl}/v1/${formData.namespace}/${formData.name}/${formData.version}/${formData.variant}/blob`;
       
       const response = await fetch(url, {
