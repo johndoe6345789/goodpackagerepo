@@ -41,11 +41,13 @@ export default function Navbar() {
               Browse
             </Link>
           </li>
-          <li>
-            <Link href="/publish" className={styles.navbar__link}>
-              Publish
-            </Link>
-          </li>
+          {user && (
+            <li>
+              <Link href="/publish" className={styles.navbar__link}>
+                Publish
+              </Link>
+            </li>
+          )}
           <li>
             <Link href="/docs" className={styles.navbar__link}>
               Docs
