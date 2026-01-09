@@ -9,8 +9,8 @@
  * For production deployments, it's strongly recommended to set NEXT_PUBLIC_API_URL.
  * 
  * Common deployment patterns:
- * - Single domain with reverse proxy: Set NEXT_PUBLIC_API_URL="" or "/api" 
- *   (if backend is served under /api path)
+ * - Single domain with Next.js rewrites: Set NEXT_PUBLIC_API_URL="" (empty string)
+ *   Backend routes (/auth/*, /v1/*) will be proxied by Next.js to the backend
  * - Separate subdomains: Set NEXT_PUBLIC_API_URL=https://api.example.com
  * - CapRover/separate apps: Set NEXT_PUBLIC_API_URL=https://backend-app.your-domain.com
  * - Same host, different port: Will auto-detect if frontend is on non-standard port
@@ -18,16 +18,15 @@
  * When NEXT_PUBLIC_API_URL is not set:
  * - For localhost: defaults to http://localhost:5000 (standard backend dev port)
  * - For deployed sites on custom port: tries backend on port 5000 (uncommon but supported)
- * - For deployed sites on standard ports: assumes same-origin (works with reverse proxy)
- * 
- * Note: The auto-detection logic assumes the backend is accessible without a path prefix.
- * If your backend is served under /api or another path, you MUST set NEXT_PUBLIC_API_URL.
+ * - For deployed sites on standard ports: returns empty string to use Next.js rewrites
  * 
  * @returns {string} The API base URL
  */
 export function getApiUrl() {
   // Check for environment variable first (preferred for production)
-  if (process.env.NEXT_PUBLIC_API_URL) {
+  // Note: We check for undefined (not set) vs empty string (set to "")
+  // Empty string is a valid value that enables Next.js rewrites proxy mode
+  if (process.env.NEXT_PUBLIC_API_URL !== undefined) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
   
@@ -44,10 +43,10 @@ export function getApiUrl() {
         return `${protocol}//${hostname}:5000`;
       }
       
-      // Pattern 2: Same origin (works with reverse proxy routing)
-      // This assumes backend is on the same host/port as frontend
-      // Common with nginx/traefik routing different paths to different services
-      return `${protocol}//${hostname}`;
+      // Pattern 2: Same origin with Next.js rewrites
+      // Return empty string to use relative URLs, which will be handled by Next.js rewrites
+      // This works when backend routes are proxied through Next.js
+      return '';
     }
     
     // For localhost development, backend is typically on port 5000
