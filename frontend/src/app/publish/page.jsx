@@ -34,7 +34,7 @@ export default function PublishPage() {
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
-          'Authorization': 'Bearer demo-token',
+          'Authorization': `Bearer ${localStorage.getItem('token')}` ,
         },
         body: formData.file
       });
@@ -66,6 +66,23 @@ export default function PublishPage() {
       });
     }
   };
+
+  // Require login
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+  if (!token) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1>Publish Package</h1>
+          <p>You must be logged in to publish packages.</p>
+        </div>
+        <div className={styles.form__actions}>
+          <a href="/login" className={`${styles.button} ${styles['button--primary']}`}>Go to Login</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>

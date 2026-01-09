@@ -44,6 +44,8 @@ BLOB_DIR = DATA_DIR / "blobs"
 META_DIR = DATA_DIR / "meta"
 ROCKSDB_DIR = DATA_DIR / "rocksdb"
 JWT_SECRET = os.environ.get("JWT_SECRET", "dev-secret-key")
+# Control whether anonymous reads are allowed. Default: False (auth required for reads)
+ALLOW_ANON_READ = os.environ.get("ALLOW_ANON_READ", "false").lower() == "true"
 
 # Initialize storage
 BLOB_DIR.mkdir(parents=True, exist_ok=True)
@@ -97,8 +99,8 @@ def require_scopes(required_scopes: list) -> Optional[Dict[str, Any]]:
     """Check if request has required scopes."""
     auth_header = request.headers.get("Authorization", "")
     if not auth_header.startswith("Bearer "):
-        # For MVP, allow unauthenticated read access
-        if "read" in required_scopes:
+        # Allow unauthenticated read access only if explicitly enabled
+        if "read" in required_scopes and ALLOW_ANON_READ:
             return {"sub": "anonymous", "scopes": ["read"]}
         raise RepositoryError("Missing authorization", 401, "UNAUTHORIZED")
     
