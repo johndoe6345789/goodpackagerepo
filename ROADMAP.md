@@ -2,6 +2,24 @@
 
 This roadmap outlines near-term hardening, medium-term feature work, and longer-term evolution for Good Package Repo.
 
+## Functional Requirements Status
+
+### ✅ Implemented
+- Seed data ingestion and sample packages for demo/test scenarios
+- Reusable templates for entities, routes, pipelines, blob stores, auth scopes, and upstreams
+- Operation vocabulary executor with auth, parsing, validation, transactions, KV, blob, index, cache, proxy placeholder, responses, and events
+- SQLAlchemy-backed configuration and auth data models with session-based auth and JWT issuing
+- Validation/test coverage for operation semantics and schema compliance
+- Documentation for operations, templates, and seed data usage
+
+### 🔧 Still Needed
+- Production-grade storage backends (RocksDB/Redis) and index persistence
+- Full proxy.fetch upstream implementation with retries and timeouts
+- Admin user management (rotate JWT secret, manage users/scopes)
+- Robust upload UX (progress, retry, digest verification feedback)
+- Observability hardening (structured logging, protected admin endpoints, tracing)
+- Security hardening (rate limiting, JWT validation options, password policy)
+
 ## 0. Immediate Hardening (Security, Correctness, UX)
 
 - Auth UX
