@@ -8,17 +8,17 @@ This roadmap outlines near-term hardening, medium-term feature work, and longer-
 - Seed data ingestion and sample packages for demo/test scenarios
 - Reusable templates for entities, routes, pipelines, blob stores, auth scopes, and upstreams
 - Operation vocabulary executor with auth, parsing, validation, transactions, KV, blob, index, cache, proxy placeholder, responses, and events
-- SQLAlchemy-backed configuration and auth data models with session-based auth and JWT issuing
+- SQLAlchemy-backed configuration and auth data models with session-based auth and token issuing
 - Validation/test coverage for operation semantics and schema compliance
 - Documentation for operations, templates, and seed data usage
 
 ### 🔧 Still Needed
 - Production-grade storage backends (RocksDB/Redis) and index persistence
 - Full proxy.fetch upstream implementation with retries and timeouts
-- Admin user management (rotate JWT secret, manage users/scopes)
+- Admin user management (manage users/scopes)
 - Robust upload UX (progress, retry, digest verification feedback)
 - Observability hardening (structured logging, protected admin endpoints, tracing)
-- Security hardening (rate limiting, JWT validation options, password policy)
+- Security hardening (rate limiting, token validation options, password policy)
 
 ## 0. Immediate Hardening (Security, Correctness, UX)
 
@@ -26,9 +26,9 @@ This roadmap outlines near-term hardening, medium-term feature work, and longer-
   - [x] Enforce login gating across all privileged actions (Publish, Account, Admin)
   - [x] Consistent token storage and refresh strategy; clear errors for 401/403
 - Backend auth defaults
-  - [x] Require JWT for read and write by default; allow opt-in anonymous read via ALLOW_ANON_READ
+  - [x] Require authentication for read and write by default; allow opt-in anonymous read via ALLOW_ANON_READ
   - [ ] Add rate-limiting to /auth/login and basic password policy requirements
-  - [ ] Validate JWT iss/aud (optional), shorter expiry, clock skew handling
+  - [ ] Harden token validation (issuer/audience checks, shorter expiry, clock skew handling)
 - Data integrity
   - [ ] Use atomic CAS for artifact metadata creation to avoid publish races
   - [x] Respect DB-configured BlobStore.root and path_template
@@ -81,7 +81,7 @@ This roadmap outlines near-term hardening, medium-term feature work, and longer-
   - [ ] Robust upload UI: progress, retry, digest verification feedback
 - Admin console (MVP)
   - [x] View config/entities/routes/blob stores
-  - [ ] Rotate JWT secret and user management (admin-only)
+  - [ ] Rotate auth secret and user management (admin-only)
 
 ## 5. Testing & Quality
 
@@ -108,7 +108,7 @@ This roadmap outlines near-term hardening, medium-term feature work, and longer-
 
 - Security model
   - [x] Anonymous vs authenticated access; ALLOW_ANON_READ guidance
-  - [ ] JWT secret management; rotation procedure
+  - [ ] Auth secret management; rotation procedure
 - Deployment
   - [x] Production-ready compose/k8s examples; CapRover instructions
 - API reference

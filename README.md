@@ -34,7 +34,6 @@ The frontend will be available at http://localhost:3000 and the backend API at h
 cd backend
 pip install -r requirements.txt
 export DATA_DIR=/tmp/data
-export JWT_SECRET=your-secret-key
 python app.py
 ```
 
@@ -123,12 +122,12 @@ Images are automatically built and pushed to GitHub Container Registry (GHCR) on
 - **Backend**: Flask-based Python API implementing the schema.json specification
 - **Frontend**: Next.js/React application with custom Material Design SCSS
 - **Storage**: SQLite for user auth, filesystem for blobs, in-memory for metadata
-- **Authentication**: JWT-based with bcrypt password hashing
+- **Authentication**: Admin login with bcrypt password hashing
 
 ## API Endpoints
 
 ### Authentication
-- `POST /auth/login` - Login and get JWT token
+- `POST /auth/login` - Login and get an auth token
 - `POST /auth/change-password` - Change password
 - `GET /auth/me` - Get current user info
 
@@ -154,7 +153,7 @@ The repository behavior is defined by `schema.json`, which includes:
 - **Entities**: Data models with validation rules
 - **Storage**: Blob stores, KV stores, document schemas
 - **Indexes**: Optimized package lookup
-- **Auth**: JWT authentication with scope-based permissions
+- **Auth**: Scope-based authentication and permissions
 - **API Routes**: Declarative pipeline-based endpoints
 - **Caching**: Response and blob caching policies
 - **Replication**: Event sourcing for multi-region sync
@@ -167,4 +166,3 @@ See LICENSE file for details.
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-

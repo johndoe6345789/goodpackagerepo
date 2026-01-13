@@ -72,14 +72,8 @@ You'll deploy these as two separate CapRover apps that communicate with each oth
 3. Scroll down to **"Environmental Variables"** and add:
 
    ```
-   JWT_SECRET=your-very-secure-random-secret-key-change-this
    DATA_DIR=/data
    FLASK_ENV=production
-   ```
-
-   **Important**: Generate a strong random string for `JWT_SECRET`. You can use:
-   ```bash
-   python3 -c "import secrets; print(secrets.token_urlsafe(32))"
    ```
 
 4. Click **"Add Persistent Directory"**:
@@ -201,7 +195,7 @@ On first deployment, the system uses default credentials:
 2. Go to user settings or use the API:
    ```bash
    curl -X POST https://goodrepo-backend.your-domain.com/auth/change-password \
-     -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+     -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"old_password": "admin", "new_password": "your-new-secure-password"}'
    ```
@@ -303,7 +297,7 @@ curl -X PUT "https://goodrepo-frontend.your-domain.com/v1/test/package/1.0.0/def
 2. Verify all environment variables are set correctly
 3. Ensure `DATA_DIR` is set to `/data`
 4. Verify persistent directory is mounted at `/data`
-5. Check that `JWT_SECRET` is set (no default value)
+5. Check that required environment variables are set
 
 ### Frontend Can't Connect to Backend
 
@@ -364,7 +358,7 @@ curl -X PUT "https://goodrepo-frontend.your-domain.com/v1/test/package/1.0.0/def
 
 **Solutions**:
 1. Verify backend is running and accessible
-2. Check that `JWT_SECRET` environment variable is set
+2. Check that required environment variables are set
 3. Try using default credentials: `admin` / `admin`
 4. Check backend logs for authentication errors
 5. Verify the backend data directory has proper permissions
@@ -401,7 +395,7 @@ If something goes wrong:
 
 1. **Security**:
    - Change default passwords immediately
-   - Use strong JWT secrets (32+ characters)
+   - Use strong application secrets (32+ characters)
    - Enable HTTPS and force HTTPS redirects
    - Regularly update dependencies
 

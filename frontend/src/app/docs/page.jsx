@@ -74,7 +74,6 @@ docker-compose up -d
         <p>In the "App Configs" tab, add these environment variables:</p>
         <ul>
           <li><code>DATA_DIR</code> = <code>/data</code></li>
-          <li><code>JWT_SECRET</code> = (generate a random secret)</li>
         </ul>
 
         <h3>Step 4: Create Frontend App</h3>
@@ -101,9 +100,9 @@ docker-compose up -d
         
         <h3>Authentication</h3>
         <p>
-          Most endpoints require a JWT token for authentication. Include it in the Authorization header:
+          Most endpoints require an auth token for authentication. Include it in the Authorization header:
         </p>
-        <pre><code>{`Authorization: Bearer YOUR_JWT_TOKEN`}</code></pre>
+        <pre><code>{`Authorization: Bearer YOUR_TOKEN`}</code></pre>
 
         <h3>Publishing a Package</h3>
         <pre><code>{`curl -X PUT \\
@@ -140,7 +139,7 @@ docker-compose up -d
           <li><strong>Entities</strong>: Data models with validation and normalization rules</li>
           <li><strong>Storage</strong>: Blob stores, KV stores, and document schemas</li>
           <li><strong>Indexes</strong>: Optimized queries for package lookup</li>
-          <li><strong>Auth</strong>: JWT-based authentication with scope-based permissions</li>
+          <li><strong>Auth</strong>: Scope-based authentication and permissions</li>
           <li><strong>API Routes</strong>: Declarative pipeline-based endpoints</li>
           <li><strong>Caching</strong>: Response and blob caching policies</li>
           <li><strong>Replication</strong>: Event sourcing for multi-region sync</li>
