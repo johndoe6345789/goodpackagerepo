@@ -1,0 +1,17 @@
+[
+  {
+    "icon": "\uD83D\uDD12",
+    "title": "Secure by Design",
+    "description": "Content-addressed storage with SHA256 verification on every upload"
+  },
+  {
+    "icon": "\u26A1",
+    "title": "Lightning Fast",
+    "description": "Built-in caching and intelligent indexing for rapid package retrieval"
+  },
+  {
+    "icon": "\uD83D\uDCCB",
+    "title": "Schema-Driven",
+    "description": "Declarative repository configuration with automatic validation"
+  }
+]

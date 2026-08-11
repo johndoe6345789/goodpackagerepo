@@ -1,0 +1,69 @@
+{
+  "id": "my_custom_route",
+  "method": "GET",
+  "path": "/v1/{namespace}/{name}/custom-endpoint",
+  "tags": ["public"],
+  "description": "Template for a custom API route with full pipeline",
+  "pipeline": [
+    {
+      "op": "auth.require_scopes",
+      "args": {
+        "scopes": ["read"]
+      },
+      "comment": "Require read scope for access"
+    },
+    {
+      "op": "parse.path",
+      "args": {
+        "entity": "artifact"
+      },
+      "comment": "Parse path parameters into entity"
+    },
+    {
+      "op": "normalize.entity",
+      "args": {
+        "entity": "artifact"
+      },
+      "comment": "Normalize entity fields"
+    },
+    {
+      "op": "validate.entity",
+      "args": {
+        "entity": "artifact"
+      },
+      "comment": "Validate entity against constraints"
+    },
+    {
+      "op": "kv.get",
+      "args": {
+        "doc": "artifact_meta",
+        "key": "artifact/{namespace}/{name}/metadata",
+        "out": "metadata"
+      },
+      "comment": "Fetch metadata from KV store"
+    },
+    {
+      "op": "respond.error",
+      "args": {
+        "when": {
+          "is_null": "$metadata"
+        },
+        "status": 404,
+        "code": "NOT_FOUND",
+        "message": "Resource not found"
+      },
+      "comment": "Return 404 if metadata doesn't exist"
+    },
+    {
+      "op": "respond.json",
+      "args": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "data": "$metadata"
+        }
+      },
+      "comment": "Return success response with metadata"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "default_host": "localhost",
+  "default_port": 9200,
+  "index_prefix": "pkgrepo",
+  "indices": {
+    "packages": "pkgrepo-packages",
+    "artifacts": "pkgrepo-artifacts",
+    "tags": "pkgrepo-tags",
+    "users": "pkgrepo-users"
+  },
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "refresh_interval": "1s"
+  },
+  "search": {
+    "default_size": 20,
+    "max_size": 100,
+    "highlight_tag": "em"
+  }
+}

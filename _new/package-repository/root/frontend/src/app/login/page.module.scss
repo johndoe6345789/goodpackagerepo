@@ -1,0 +1,85 @@
+@import '../../styles/variables';
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  padding: $spacing-lg;
+}
+
+.loginBox {
+  @include card;
+  width: 100%;
+  max-width: 400px;
+  padding: $spacing-xl;
+  
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+    
+    h1 {
+      font-size: $font-size-h4;
+      margin-bottom: $spacing-sm;
+    }
+    
+    p {
+      color: $text-secondary;
+    }
+  }
+  
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-lg;
+  }
+  
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+  
+  &__label {
+    font-weight: 500;
+    color: $text-primary;
+  }
+  
+  &__input {
+    @include input-base;
+  }
+  
+  &__button {
+    @include button-base;
+    background: $primary-color;
+    color: white;
+    margin-top: $spacing-md;
+    
+    &:hover {
+      background: $primary-dark;
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.alert {
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  margin-bottom: $spacing-lg;
+  
+  &--error {
+    background: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid $error-color;
+    color: darken($error-color, 20%);
+  }
+  
+  &--success {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid $success-color;
+    color: darken($success-color, 20%);
+  }
+}

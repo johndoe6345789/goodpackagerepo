@@ -1,0 +1,36 @@
+{
+  "name": "my_upstream",
+  "description": "Configuration for upstream repository proxy",
+  "base_url": "https://registry.example.com",
+  "auth": {
+    "mode": "bearer_token",
+    "description": "Authentication mode: none, basic, bearer_token, api_key",
+    "token_env": "UPSTREAM_TOKEN",
+    "alternatives": {
+      "basic": {
+        "username": "user",
+        "password_env": "UPSTREAM_PASSWORD"
+      },
+      "api_key": {
+        "header": "X-API-Key",
+        "key_env": "UPSTREAM_API_KEY"
+      }
+    }
+  },
+  "timeouts_ms": {
+    "connect": 2000,
+    "read": 10000,
+    "description": "Connection timeout: 2s, Read timeout: 10s"
+  },
+  "retry": {
+    "max_attempts": 2,
+    "backoff_ms": 200,
+    "exponential": true,
+    "description": "Retry up to 2 times with exponential backoff"
+  },
+  "health_check": {
+    "enabled": true,
+    "endpoint": "/health",
+    "interval_seconds": 60
+  }
+}

@@ -1,0 +1,76 @@
+@import '../styles/variables';
+
+.button {
+  @include button-base;
+
+  &--primary {
+    background: $primary-color;
+    color: white;
+
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+
+  &--danger {
+    background: $error-color;
+    color: white;
+
+    &:hover {
+      background: darken($error-color, 10%);
+    }
+  }
+}
+
+.fieldArray {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  &__item {
+    @include card;
+    padding: $spacing-md;
+    display: flex;
+    gap: $spacing-md;
+    align-items: flex-start;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__remove {
+    @include button-base;
+    padding: $spacing-xs $spacing-sm;
+    background: transparent;
+    color: $error-color;
+    border: 1px solid $error-color;
+    font-size: $font-size-caption;
+
+    &:hover {
+      background: rgba(244, 67, 54, 0.04);
+    }
+  }
+
+  &__add {
+    @include button-base;
+    background: transparent;
+    color: $primary-color;
+    border: 1px dashed $primary-color;
+
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+      border-style: solid;
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "deb": ".deb",
+  "npm": ".tgz",
+  "conan": ".tar.gz",
+  "pypi": ".whl",
+  "maven": ".jar",
+  "nuget": ".nupkg",
+  "cargo": ".crate",
+  "go": ".zip",
+  "rpm": ".rpm",
+  "alpine": ".apk",
+  "helm": ".tgz",
+  "oci": ".tar",
+  "rubygems": ".gem",
+  "composer": ".zip",
+  "generic": ".tar.gz"
+}

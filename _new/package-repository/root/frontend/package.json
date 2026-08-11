@@ -1,0 +1,39 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@shared/components": "file:../../../../shared/components",
+    "@shared/hooks": "file:../../../../shared/hooks",
+    "@shared/hooks-canvas": "file:../../../../shared/redux/hooks-canvas",
+    "@shared/icons": "file:../../../../shared/icons",
+    "@shared/m3": "file:../../../../shared/components/m3",
+    "@shared/redux-core": "file:../../../../shared/redux/core",
+    "@shared/redux-slices": "file:../../../../shared/redux/slices",
+    "@shared/scss": "file:../../../../shared/scss",
+    "@shared/service-adapters": "file:../../../../shared/redux/adapters",
+    "@monaco-editor/react": "^4.7.0",
+    "@reduxjs/toolkit": "^2.11.2",
+    "next": "^16.2.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-redux": "^9.2.0",
+    "sass": "^1.97.1"
+  },
+  "devDependencies": {
+    "@types/node": "25.5.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "^5.4.0"
+  }
+}

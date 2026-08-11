@@ -1,0 +1,54 @@
+# riscv64 build — official Node Docker images lack riscv64.
+# Use Ubuntu 24.04 (has riscv64) with system Node 18.
+# Patches SWC to use WASM fallback (no native riscv64).
+FROM ubuntu:24.04 AS base
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    nodejs npm ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
+    node --version && npm --version
+
+FROM base AS deps
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Patch SWC + parcel/watcher for riscv64
+FROM deps AS patched
+COPY scripts/patch-exotic-arch.sh ./
+RUN chmod +x patch-exotic-arch.sh && \
+    ./patch-exotic-arch.sh
+
+FROM base AS builder
+WORKDIR /app
+COPY --from=patched /app/node_modules ./node_modules
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN mkdir -p public
+RUN npm run build
+
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN groupadd --system --gid 1001 nodejs && \
+    useradd --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+RUN mkdir .next
+RUN chown nextjs:nodejs .next
+
+COPY --from=builder --chown=nextjs:nodejs \
+    /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs \
+    /app/.next/static ./.next/static
+
+USER nextjs
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+CMD ["node", "server.js"]

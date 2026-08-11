@@ -1,0 +1,84 @@
+@import '../styles/variables';
+
+.panel {
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding: $spacing-sm $spacing-lg;
+  background: $surface-color; min-height: 80px;
+  overflow-y: auto;
+}
+
+.hint {
+  color: $text-hint; font-size: $font-size-body2;
+  margin: 0; font-style: italic;
+}
+
+.header {
+  display: flex; align-items: center;
+  justify-content: space-between; gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: $font-size-h6; margin: 0;
+  color: $text-primary; letter-spacing: -0.3px;
+}
+
+.btn {
+  @include button-base;
+  padding: 7px $spacing-md;
+  background: $primary-color; color: #fff;
+  font-size: $font-size-caption;
+  border-radius: $border-radius-xl;
+  &:hover { background: $primary-dark; }
+}
+
+.meta {
+  display: flex; gap: 6px;
+  margin-top: $spacing-xs; flex-wrap: wrap;
+}
+
+.tag {
+  display: inline-block; padding: 3px 10px;
+  border-radius: $border-radius-xl;
+  font-size: 11px; font-weight: 600;
+  background: rgba(0, 0, 0, 0.05); color: $text-primary;
+}
+
+.error {
+  margin: $spacing-xs 0 0; padding: 6px $spacing-sm;
+  background: #fdecea; color: #b71c1c;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-caption;
+}
+
+.stats {
+  display: flex; gap: $spacing-md;
+  margin-top: $spacing-xs; flex-wrap: wrap;
+  font-size: $font-size-caption; color: $text-secondary;
+}
+
+.digest {
+  font-family: $font-family-mono;
+  color: $text-hint; font-size: 11px;
+}
+
+.desc {
+  font-size: $font-size-body2;
+  color: $text-secondary; margin: $spacing-xs 0 0;
+  line-height: 1.5;
+}
+
+.pre {
+  margin: $spacing-xs 0 0;
+  padding: 10px $spacing-sm;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: $border-radius-sm;
+  overflow-x: auto; white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.code {
+  font-family: $font-family-mono;
+  font-size: $font-size-caption; color: $primary-dark;
+  line-height: 1.7; background: none; padding: 0;
+}

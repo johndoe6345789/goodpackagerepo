@@ -1,0 +1,77 @@
+[
+  {
+    "id": "deb", "label": "deb/apt",
+    "desc": "Debian/Ubuntu .deb packages", "color": "#A80030",
+    "install": "```\napt install {name}={version}\n```"
+  },
+  {
+    "id": "npm", "label": "npm",
+    "desc": "Node.js packages", "color": "#CB3837",
+    "install": "```\nnpm install {name}@{version} --registry {host}/npm/\n```"
+  },
+  {
+    "id": "conan", "label": "conan",
+    "desc": "C/C++ Conan v2 packages", "color": "#6699CB",
+    "install": "```\nconan remote add nextra {host}/conan\nconan install --requires={name}/{version}\n```"
+  },
+  {
+    "id": "pypi", "label": "pypi",
+    "desc": "Python wheels/sdists", "color": "#3776AB",
+    "install": "```\npip install {name}=={version} --index-url {host}/pypi/simple/\n```"
+  },
+  {
+    "id": "maven", "label": "maven",
+    "desc": "Java/Kotlin JARs", "color": "#C71A36",
+    "install": "```\nmvn dependency:get -DremoteRepositories={host}/maven -Dartifact={ns}:{name}:{version}\n```"
+  },
+  {
+    "id": "nuget", "label": "nuget",
+    "desc": "dotnet NuGet packages", "color": "#004880",
+    "install": "```\ndotnet nuget add source {host}/nuget/v3/index.json -n nextra\ndotnet add package {name} --version {version}\n```"
+  },
+  {
+    "id": "cargo", "label": "cargo",
+    "desc": "Rust crates", "color": "#DEA584",
+    "install": "```\ncargo install {name}@{version} --registry {host}/cargo\n```"
+  },
+  {
+    "id": "go", "label": "go",
+    "desc": "Go modules", "color": "#00ADD8",
+    "install": "```\nGOPROXY={host}/go go get {ns}/{name}@v{version}\n```"
+  },
+  {
+    "id": "rpm", "label": "rpm",
+    "desc": "RHEL/Fedora .rpm packages", "color": "#EE0000",
+    "install": "```\ndnf config-manager --add-repo {host}/rpm\ndnf install {name}-{version}\n```"
+  },
+  {
+    "id": "alpine", "label": "alpine",
+    "desc": "Alpine Linux apk packages", "color": "#0D597F",
+    "install": "```\necho {host}/alpine/edge/main >> /etc/apk/repositories\napk add {name}={version}\n```"
+  },
+  {
+    "id": "helm", "label": "helm",
+    "desc": "Kubernetes Helm charts", "color": "#0F1689",
+    "install": "```\nhelm repo add nextra {host}/helm\nhelm install {name} nextra/{name} --version {version}\n```"
+  },
+  {
+    "id": "oci", "label": "oci",
+    "desc": "OCI container images", "color": "#2496ED",
+    "install": "```\ndocker pull {host_bare}/{ns}/{name}:{version}\n```"
+  },
+  {
+    "id": "rubygems", "label": "rubygems",
+    "desc": "Ruby gems", "color": "#CC342D",
+    "install": "```\ngem install {name} -v {version} --source {host}/rubygems\n```"
+  },
+  {
+    "id": "composer", "label": "composer",
+    "desc": "PHP Composer packages", "color": "#885630",
+    "install": "```\ncomposer config repositories.nextra composer {host}/composer\ncomposer require {ns}/{name}:{version}\n```"
+  },
+  {
+    "id": "generic", "label": "generic",
+    "desc": "Arbitrary binary blobs", "color": "#757575",
+    "install": "```\nmanager repo pull {ns}/{name}@{version}\n```"
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "name": "my_entity",
+  "description": "Description of what this entity represents",
+  "fields": {
+    "field1": {
+      "type": "string",
+      "optional": false,
+      "normalize": ["trim", "lower"],
+      "description": "First field - normalized to lowercase"
+    },
+    "field2": {
+      "type": "string",
+      "optional": true,
+      "normalize": ["trim"],
+      "description": "Optional second field"
+    },
+    "field3": {
+      "type": "string",
+      "optional": false,
+      "normalize": ["trim", "replace:_:-"],
+      "description": "Field with underscore to hyphen replacement"
+    }
+  },
+  "primary_key": ["field1", "field2"],
+  "constraints": [
+    {
+      "field": "field1",
+      "regex": "^[a-z0-9][a-z0-9._-]{0,127}$",
+      "description": "Must start with alphanumeric, can contain dots, underscores, hyphens"
+    },
+    {
+      "field": "field2",
+      "regex": "^[a-z0-9][a-z0-9._-]{0,127}$",
+      "when_present": true,
+      "description": "Same pattern but only validated when present"
+    }
+  ]
+}

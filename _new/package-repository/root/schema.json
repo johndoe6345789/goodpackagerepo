@@ -1,0 +1,894 @@
+{
+  "schema_version": "1.0",
+  "type_id": "acme.declarative_repo_type",
+  "description": "Mega schema: declarative repository type with closed-world ops, routes, storage, indexing, caching, replication, GC, invariants, and static validation.",
+  "capabilities": {
+    "protocols": ["http"],
+    "storage": ["blob", "kv", "index"],
+    "features": ["proxy", "virtual", "replication", "gc", "audit", "immutability"]
+  },
+
+  "entities": {
+    "artifact": {
+      "fields": {
+        "namespace": { "type": "string", "normalize": ["trim", "lower"] },
+        "name": { "type": "string", "normalize": ["trim", "lower", "replace:_:-"] },
+        "version": { "type": "string", "normalize": ["trim"] },
+        "variant": { "type": "string", "optional": true, "normalize": ["trim", "lower"] },
+        "tag": { "type": "string", "optional": true, "normalize": ["trim", "lower"] },
+        "digest": { "type": "string", "optional": true, "normalize": ["trim", "lower"] }
+      },
+      "primary_key": ["namespace", "name", "version", "variant"],
+      "constraints": [
+        { "field": "namespace", "regex": "^[a-z0-9][a-z0-9._-]{0,127}$" },
+        { "field": "name", "regex": "^[a-z0-9][a-z0-9._-]{0,127}$" },
+        { "field": "version", "regex": "^[A-Za-z0-9][A-Za-z0-9._+-]{0,127}$" },
+        { "field": "variant", "regex": "^[a-z0-9][a-z0-9._-]{0,127}$", "when_present": true },
+        { "field": "tag", "regex": "^[a-z0-9][a-z0-9._-]{0,127}$", "when_present": true },
+        { "field": "digest", "regex": "^(sha256:)?[a-f0-9]{64}$", "when_present": true }
+      ]
+    },
+    "versioning": {
+      "scheme": "semver",
+      "ordering": "semver",
+      "allow_prerelease": false,
+      "latest_policy": {
+        "enabled": true,
+        "monotonic": true,
+        "exclude_prerelease": true
+      }
+    }
+  },
+
+  "storage": {
+    "blob_stores": {
+      "primary": {
+        "kind": "filesystem",
+        "root": "/data/blobs",
+        "addressing": {
+          "mode": "content_addressed",
+          "digest": "sha256",
+          "path_template": "sha256/{digest:0:2}/{digest:2:2}/{digest}"
+        },
+        "limits": {
+          "max_blob_bytes": 2147483648,
+          "min_blob_bytes": 0
+        }
+      }
+    },
+    "kv_stores": {
+      "meta": { "kind": "rocksdb", "root": "/data/meta" }
+    },
+    "documents": {
+      "artifact_meta": {
+        "store": "meta",
+        "key_template": "artifact/{namespace}/{name}/{version}/{variant?}",
+        "schema": "ArtifactMetaV1"
+      },
+      "tag_map": {
+        "store": "meta",
+        "key_template": "tag/{namespace}/{name}/{tag}",
+        "schema": "TagMapV1"
+      }
+    },
+    "schemas": {
+      "ArtifactMetaV1": {
+        "type": "object",
+        "required": ["namespace", "name", "version", "blob_digest", "created_at"],
+        "properties": {
+          "namespace": { "type": "string" },
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "variant": { "type": "string" },
+          "blob_digest": { "type": "string" },
+          "blob_size": { "type": "integer" },
+          "created_at": { "type": "string" },
+          "created_by": { "type": "string" },
+          "labels": { "type": "object" },
+          "integrity": {
+            "type": "object",
+            "properties": {
+              "algo": { "type": "string" },
+              "digest": { "type": "string" }
+            }
+          }
+        }
+      },
+      "TagMapV1": {
+        "type": "object",
+        "required": ["namespace", "name", "tag", "target_key", "updated_at"],
+        "properties": {
+          "namespace": { "type": "string" },
+          "name": { "type": "string" },
+          "tag": { "type": "string" },
+          "target_key": { "type": "string" },
+          "updated_at": { "type": "string" },
+          "updated_by": { "type": "string" }
+        }
+      }
+    }
+  },
+
+  "indexes": {
+    "artifact_versions": {
+      "source_document": "artifact_meta",
+      "keys": [
+        {
+          "name": "by_name",
+          "fields": ["namespace", "name"],
+          "sort": ["version:desc"]
+        }
+      ],
+      "materialization": {
+        "mode": "incremental",
+        "trigger": "on_commit"
+      }
+    },
+    "tags": {
+      "source_document": "tag_map",
+      "keys": [
+        {
+          "name": "by_tag",
+          "fields": ["namespace", "name", "tag"],
+          "unique": true
+        }
+      ],
+      "materialization": {
+        "mode": "incremental",
+        "trigger": "on_commit"
+      }
+    }
+  },
+
+  "auth": {
+    "principals": { "source": "jwt" },
+    "scopes": [
+      { "name": "read", "actions": ["blob.get", "kv.get", "index.query"] },
+      {
+        "name": "write",
+        "actions": ["blob.put", "kv.put", "kv.cas_put", "index.upsert", "index.delete"]
+      },
+      { "name": "admin", "actions": ["*"] }
+    ],
+    "policies": [
+      {
+        "name": "allow_public_read",
+        "effect": "allow",
+        "when": { "route.tags": ["public"] },
+        "require": { "scopes": ["read"] }
+      },
+      {
+        "name": "allow_write_paths",
+        "effect": "allow",
+        "when": { "route.tags": ["write_path"] },
+        "require": { "scopes": ["write"] }
+      }
+    ]
+  },
+
+  "upstreams": {
+    "originA": {
+      "base_url": "https://registry.example.com",
+      "auth": { "mode": "bearer_token" },
+      "timeouts_ms": { "connect": 2000, "read": 10000 },
+      "retry": { "max_attempts": 2, "backoff_ms": 200 }
+    }
+  },
+
+  "caching": {
+    "response_cache": {
+      "enabled": true,
+      "vary_headers": ["Accept", "Authorization"],
+      "max_entry_bytes": 10485760,
+      "default_ttl_seconds": 300,
+      "revalidate": { "use_etag": true, "use_last_modified": true }
+    },
+    "blob_cache": {
+      "enabled": true,
+      "pin_on_access": true,
+      "max_bytes": 1099511627776,
+      "eviction": { "policy": "lru" }
+    }
+  },
+
+  "ops": {
+    "closed_world": true,
+    "allowed": [
+      "auth.require_scopes",
+      "parse.path",
+      "parse.query",
+      "parse.json",
+      "normalize.entity",
+      "validate.entity",
+      "validate.json_schema",
+      "txn.begin",
+      "txn.commit",
+      "txn.abort",
+      "kv.get",
+      "kv.put",
+      "kv.cas_put",
+      "kv.delete",
+      "blob.get",
+      "blob.put",
+      "blob.verify_digest",
+      "index.query",
+      "index.upsert",
+      "index.delete",
+      "cache.get",
+      "cache.put",
+      "proxy.fetch",
+      "emit.event",
+      "respond.json",
+      "respond.bytes",
+      "respond.redirect",
+      "respond.error",
+      "time.now_iso8601",
+      "string.format"
+    ],
+    "limits": {
+      "max_pipeline_ops": 128,
+      "max_request_body_bytes": 2147483648,
+      "max_json_bytes": 10485760,
+      "max_kv_value_bytes": 1048576,
+      "max_cpu_ms_per_request": 200,
+      "max_io_ops_per_request": 5000
+    }
+  },
+
+  "api": {
+    "routes": [
+      {
+        "id": "publish_artifact_blob",
+        "method": "PUT",
+        "path": "/v1/{namespace}/{name}/{version}/{variant}/blob",
+        "tags": ["write_path"],
+        "pipeline": [
+          { "op": "auth.require_scopes", "args": { "scopes": ["write"] } },
+          { "op": "parse.path", "args": { "entity": "artifact" } },
+          { "op": "normalize.entity", "args": { "entity": "artifact" } },
+          { "op": "validate.entity", "args": { "entity": "artifact" } },
+
+          { "op": "txn.begin", "args": { "isolation": "serializable" } },
+
+          {
+            "op": "blob.put",
+            "args": {
+              "store": "primary",
+              "from": "request.body",
+              "out": "digest",
+              "out_size": "blob_size"
+            }
+          },
+          {
+            "op": "blob.verify_digest",
+            "args": { "digest": "$digest", "algo": "sha256" }
+          },
+          { "op": "time.now_iso8601", "args": { "out": "now" } },
+          {
+            "op": "kv.cas_put",
+            "args": {
+              "doc": "artifact_meta",
+              "key": "artifact/{namespace}/{name}/{version}/{variant}",
+              "if_absent": true,
+              "value": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "version": "{version}",
+                "variant": "{variant}",
+                "blob_digest": "$digest",
+                "blob_size": "$blob_size",
+                "created_at": "$now",
+                "created_by": "{principal.sub}"
+              }
+            }
+          },
+          {
+            "op": "index.upsert",
+            "args": {
+              "index": "artifact_versions",
+              "key": { "namespace": "{namespace}", "name": "{name}" },
+              "value": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "version": "{version}",
+                "variant": "{variant}",
+                "blob_digest": "$digest"
+              }
+            }
+          },
+          {
+            "op": "emit.event",
+            "args": {
+              "type": "artifact.published",
+              "payload": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "version": "{version}",
+                "variant": "{variant}",
+                "blob_digest": "$digest",
+                "blob_size": "$blob_size",
+                "at": "$now",
+                "by": "{principal.sub}"
+              }
+            }
+          },
+
+          { "op": "txn.commit", "args": {} },
+
+          {
+            "op": "respond.json",
+            "args": {
+              "status": 201,
+              "body": {
+                "ok": true,
+                "digest": "$digest",
+                "size": "$blob_size"
+              }
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "fetch_artifact_blob",
+        "method": "GET",
+        "path": "/v1/{namespace}/{name}/{version}/{variant}/blob",
+        "tags": ["public"],
+        "pipeline": [
+          { "op": "auth.require_scopes", "args": { "scopes": ["read"] } },
+          { "op": "parse.path", "args": { "entity": "artifact" } },
+          { "op": "normalize.entity", "args": { "entity": "artifact" } },
+          { "op": "validate.entity", "args": { "entity": "artifact" } },
+
+          {
+            "op": "cache.get",
+            "args": {
+              "kind": "response",
+              "key": "blob_resp/{namespace}/{name}/{version}/{variant}",
+              "hit_out": "cache_hit",
+              "value_out": "cached_resp"
+            }
+          },
+          {
+            "op": "respond.bytes",
+            "args": {
+              "when": { "equals": ["$cache_hit", true] },
+              "status": 200,
+              "body": "$cached_resp.body",
+              "headers": "$cached_resp.headers"
+            }
+          },
+
+          {
+            "op": "kv.get",
+            "args": {
+              "doc": "artifact_meta",
+              "key": "artifact/{namespace}/{name}/{version}/{variant}",
+              "out": "meta"
+            }
+          },
+          {
+            "op": "respond.error",
+            "args": {
+              "when": { "is_null": "$meta" },
+              "status": 404,
+              "code": "NOT_FOUND",
+              "message": "Artifact not found"
+            }
+          },
+
+          {
+            "op": "blob.get",
+            "args": {
+              "store": "primary",
+              "digest": "$meta.blob_digest",
+              "out": "blob"
+            }
+          },
+          {
+            "op": "cache.put",
+            "args": {
+              "kind": "response",
+              "key": "blob_resp/{namespace}/{name}/{version}/{variant}",
+              "ttl_seconds": 300,
+              "value": {
+                "headers": {
+                  "Content-Type": "application/octet-stream",
+                  "ETag": "\"$meta.blob_digest\""
+                },
+                "body": "$blob"
+              }
+            }
+          },
+          {
+            "op": "respond.bytes",
+            "args": {
+              "status": 200,
+              "headers": {
+                "Content-Type": "application/octet-stream",
+                "ETag": "\"$meta.blob_digest\""
+              },
+              "body": "$blob"
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "set_tag",
+        "method": "PUT",
+        "path": "/v1/{namespace}/{name}/tags/{tag}",
+        "tags": ["write_path"],
+        "pipeline": [
+          { "op": "auth.require_scopes", "args": { "scopes": ["write"] } },
+          { "op": "parse.path", "args": { "entity": "artifact" } },
+          { "op": "normalize.entity", "args": { "entity": "artifact" } },
+          { "op": "validate.entity", "args": { "entity": "artifact" } },
+          { "op": "parse.json", "args": { "out": "body" } },
+          {
+            "op": "validate.json_schema",
+            "args": {
+              "schema": {
+                "type": "object",
+                "required": ["target_version", "target_variant"],
+                "properties": {
+                  "target_version": { "type": "string" },
+                  "target_variant": { "type": "string" }
+                }
+              },
+              "value": "$body"
+            }
+          },
+
+          { "op": "txn.begin", "args": { "isolation": "serializable" } },
+          { "op": "time.now_iso8601", "args": { "out": "now" } },
+
+          {
+            "op": "kv.get",
+            "args": {
+              "doc": "artifact_meta",
+              "key": "artifact/{namespace}/{name}/{target_version}/{target_variant}",
+              "out": "target_meta"
+            }
+          },
+          {
+            "op": "respond.error",
+            "args": {
+              "when": { "is_null": "$target_meta" },
+              "status": 404,
+              "code": "TARGET_NOT_FOUND",
+              "message": "Target artifact not found"
+            }
+          },
+
+          {
+            "op": "kv.put",
+            "args": {
+              "doc": "tag_map",
+              "key": "tag/{namespace}/{name}/{tag}",
+              "value": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "tag": "{tag}",
+                "target_key": "artifact/{namespace}/{name}/{target_version}/{target_variant}",
+                "updated_at": "$now",
+                "updated_by": "{principal.sub}"
+              }
+            }
+          },
+          {
+            "op": "index.upsert",
+            "args": {
+              "index": "tags",
+              "key": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "tag": "{tag}"
+              },
+              "value": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "tag": "{tag}",
+                "target_key": "artifact/{namespace}/{name}/{target_version}/{target_variant}"
+              }
+            }
+          },
+          {
+            "op": "emit.event",
+            "args": {
+              "type": "tag.updated",
+              "payload": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "tag": "{tag}",
+                "target_version": "{target_version}",
+                "target_variant": "{target_variant}",
+                "at": "$now",
+                "by": "{principal.sub}"
+              }
+            }
+          },
+
+          { "op": "txn.commit", "args": {} },
+          { "op": "respond.json", "args": { "status": 200, "body": { "ok": true } } }
+        ]
+      },
+
+      {
+        "id": "resolve_latest",
+        "method": "GET",
+        "path": "/v1/{namespace}/{name}/latest",
+        "tags": ["public"],
+        "pipeline": [
+          { "op": "auth.require_scopes", "args": { "scopes": ["read"] } },
+          { "op": "parse.path", "args": { "entity": "artifact" } },
+          { "op": "normalize.entity", "args": { "entity": "artifact" } },
+          { "op": "validate.entity", "args": { "entity": "artifact" } },
+
+          {
+            "op": "index.query",
+            "args": {
+              "index": "artifact_versions",
+              "key": { "namespace": "{namespace}", "name": "{name}" },
+              "limit": 1,
+              "out": "rows"
+            }
+          },
+          {
+            "op": "respond.error",
+            "args": {
+              "when": { "is_empty": "$rows" },
+              "status": 404,
+              "code": "NOT_FOUND",
+              "message": "No versions found"
+            }
+          },
+          {
+            "op": "respond.json",
+            "args": {
+              "status": 200,
+              "body": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "version": "$rows[0].version",
+                "variant": "$rows[0].variant",
+                "blob_digest": "$rows[0].blob_digest"
+              }
+            }
+          }
+        ]
+      },
+
+      {
+        "id": "proxy_fallback_fetch_blob",
+        "method": "GET",
+        "path": "/v1/proxy/{namespace}/{name}/{version}/{variant}/blob",
+        "tags": ["public", "proxy"],
+        "pipeline": [
+          { "op": "auth.require_scopes", "args": { "scopes": ["read"] } },
+          { "op": "parse.path", "args": { "entity": "artifact" } },
+          { "op": "normalize.entity", "args": { "entity": "artifact" } },
+          { "op": "validate.entity", "args": { "entity": "artifact" } },
+
+          {
+            "op": "kv.get",
+            "args": {
+              "doc": "artifact_meta",
+              "key": "artifact/{namespace}/{name}/{version}/{variant}",
+              "out": "meta"
+            }
+          },
+          {
+            "op": "respond.redirect",
+            "args": {
+              "when": { "is_not_null": "$meta" },
+              "status": 307,
+              "location": "/v1/{namespace}/{name}/{version}/{variant}/blob"
+            }
+          },
+
+          {
+            "op": "proxy.fetch",
+            "args": {
+              "upstream": "originA",
+              "method": "GET",
+              "path": "/v1/{namespace}/{name}/{version}/{variant}/blob",
+              "out": "up_resp"
+            }
+          },
+          {
+            "op": "respond.error",
+            "args": {
+              "when": { "not_in": ["$up_resp.status", [200]] },
+              "status": 502,
+              "code": "UPSTREAM_ERROR",
+              "message": "Upstream fetch failed"
+            }
+          },
+
+          { "op": "txn.begin", "args": { "isolation": "serializable" } },
+          {
+            "op": "blob.put",
+            "args": {
+              "store": "primary",
+              "from": "$up_resp.body",
+              "out": "digest",
+              "out_size": "blob_size"
+            }
+          },
+          { "op": "time.now_iso8601", "args": { "out": "now" } },
+          {
+            "op": "kv.cas_put",
+            "args": {
+              "doc": "artifact_meta",
+              "key": "artifact/{namespace}/{name}/{version}/{variant}",
+              "if_absent": true,
+              "value": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "version": "{version}",
+                "variant": "{variant}",
+                "blob_digest": "$digest",
+                "blob_size": "$blob_size",
+                "created_at": "$now",
+                "created_by": "proxy:originA"
+              }
+            }
+          },
+          {
+            "op": "index.upsert",
+            "args": {
+              "index": "artifact_versions",
+              "key": { "namespace": "{namespace}", "name": "{name}" },
+              "value": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "version": "{version}",
+                "variant": "{variant}",
+                "blob_digest": "$digest"
+              }
+            }
+          },
+          {
+            "op": "emit.event",
+            "args": {
+              "type": "artifact.cached",
+              "payload": {
+                "namespace": "{namespace}",
+                "name": "{name}",
+                "version": "{version}",
+                "variant": "{variant}",
+                "blob_digest": "$digest",
+                "blob_size": "$blob_size",
+                "at": "$now",
+                "from": "originA"
+              }
+            }
+          },
+          { "op": "txn.commit", "args": {} },
+
+          {
+            "op": "respond.bytes",
+            "args": {
+              "status": 200,
+              "headers": { "Content-Type": "application/octet-stream" },
+              "body": "$up_resp.body"
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  "events": {
+    "types": [
+      {
+        "name": "artifact.published",
+        "durable": true,
+        "schema": {
+          "type": "object",
+          "required": ["namespace", "name", "version", "variant", "blob_digest", "at"],
+          "properties": {
+            "namespace": { "type": "string" },
+            "name": { "type": "string" },
+            "version": { "type": "string" },
+            "variant": { "type": "string" },
+            "blob_digest": { "type": "string" },
+            "blob_size": { "type": "integer" },
+            "at": { "type": "string" },
+            "by": { "type": "string" }
+          }
+        }
+      },
+      {
+        "name": "artifact.cached",
+        "durable": true,
+        "schema": { "type": "object" }
+      },
+      {
+        "name": "tag.updated",
+        "durable": true,
+        "schema": { "type": "object" }
+      }
+    ]
+  },
+
+  "replication": {
+    "mode": "event_sourcing",
+    "log": {
+      "store": "meta",
+      "key_prefix": "eventlog/",
+      "ordering": "append_only",
+      "max_event_bytes": 262144
+    },
+    "shipping": {
+      "strategy": "at_least_once",
+      "dedupe": { "enabled": true, "key": "event_id" },
+      "batch": { "max_events": 1000, "max_bytes": 10485760 }
+    },
+    "replay": {
+      "idempotency": "required",
+      "apply_pipelines": {
+        "artifact.published": "apply_artifact_published",
+        "tag.updated": "apply_tag_updated"
+      }
+    },
+    "apply_pipelines": {
+      "apply_artifact_published": [
+        { "op": "txn.begin", "args": { "isolation": "serializable" } },
+        {
+          "op": "kv.cas_put",
+          "args": {
+            "doc": "artifact_meta",
+            "key": "artifact/{namespace}/{name}/{version}/{variant}",
+            "if_absent": true,
+            "value": "{event.payload}"
+          }
+        },
+        {
+          "op": "index.upsert",
+          "args": {
+            "index": "artifact_versions",
+            "key": { "namespace": "{namespace}", "name": "{name}" },
+            "value": "{event.payload}"
+          }
+        },
+        { "op": "txn.commit", "args": {} }
+      ],
+      "apply_tag_updated": [
+        { "op": "txn.begin", "args": { "isolation": "serializable" } },
+        {
+          "op": "kv.put",
+          "args": {
+            "doc": "tag_map",
+            "key": "tag/{namespace}/{name}/{tag}",
+            "value": "{event.payload}"
+          }
+        },
+        {
+          "op": "index.upsert",
+          "args": {
+            "index": "tags",
+            "key": { "namespace": "{namespace}", "name": "{name}", "tag": "{tag}" },
+            "value": "{event.payload}"
+          }
+        },
+        { "op": "txn.commit", "args": {} }
+      ]
+    }
+  },
+
+  "gc": {
+    "enabled": true,
+    "retention": {
+      "immutable_after_publish": true,
+      "keep_last_n_versions": 50,
+      "keep_tags_forever": true
+    },
+    "sweep": {
+      "schedule": { "rrule": "FREQ=DAILY;BYHOUR=3;BYMINUTE=0;BYSECOND=0" },
+      "mark": {
+        "sources": ["artifact_meta", "tag_map"],
+        "mark_blobs_by": ["artifact_meta.blob_digest"]
+      },
+      "sweep_unreferenced_after_seconds": 604800
+    }
+  },
+
+  "invariants": {
+    "global": [
+      {
+        "id": "inv.cas_identity",
+        "description": "All stored blobs must be addressed by sha256 and verified on ingest.",
+        "assert": {
+          "all": [
+            { "equals": ["storage.blob_stores.primary.addressing.mode", "content_addressed"] },
+            { "equals": ["storage.blob_stores.primary.addressing.digest", "sha256"] }
+          ]
+        }
+      },
+      {
+        "id": "inv.immutability",
+        "description": "Artifact metadata keys are write-once (CAS put if_absent).",
+        "assert": {
+          "route_requires": {
+            "publish_artifact_blob": [
+              { "op": "kv.cas_put", "args_contains": { "if_absent": true } }
+            ]
+          }
+        }
+      },
+      {
+        "id": "inv.latest_monotonic",
+        "description": "If latest_policy.monotonic is true, tags must be either immutable or excluded from latest resolution.",
+        "assert": {
+          "implies": [
+            { "equals": ["entities.versioning.latest_policy.monotonic", true] },
+            {
+              "any": [
+                { "equals": ["features.mutable_tags", false] },
+                { "equals": ["entities.versioning.latest_policy.enabled", false] }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+
+  "features": {
+    "mutable_tags": true,
+    "allow_overwrite_artifacts": false,
+    "proxy_enabled": true
+  },
+
+  "validation": {
+    "load_time_checks": [
+      {
+        "id": "val.ops_closed_world",
+        "require": { "equals": ["ops.closed_world", true] },
+        "on_fail": "reject_config"
+      },
+      {
+        "id": "val.pipeline_ops_allowed",
+        "require": { "pipelines_only_use_ops_in": "ops.allowed" },
+        "on_fail": "reject_config"
+      },
+      {
+        "id": "val_entity_references",
+        "require": { "all_entity_refs_exist": true },
+        "on_fail": "reject_config"
+      },
+      {
+        "id": "val_unique_routes",
+        "require": { "unique": ["api.routes[].id"] },
+        "on_fail": "reject_config"
+      },
+      {
+        "id": "val_unique_index_keys",
+        "require": { "unique": ["indexes.*.keys[].name"] },
+        "on_fail": "reject_config"
+      },
+      {
+        "id": "val_no_unbounded_proxy",
+        "require": {
+          "proxy_fetch_requires_timeouts": true,
+          "proxy_fetch_requires_retry_bounds": true
+        },
+        "on_fail": "reject_config"
+      }
+    ],
+    "runtime_checks": [
+      {
+        "id": "run.digest_verify_on_put",
+        "require": { "all_blob_puts_followed_by": "blob.verify_digest" },
+        "on_fail": "abort_request"
+      },
+      {
+        "id": "run.txn_for_writes",
+        "require": { "all_kv_or_index_writes_inside_txn": true },
+        "on_fail": "abort_request"
+      }
+    ]
+  }
+}

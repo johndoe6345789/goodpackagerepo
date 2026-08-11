@@ -1,0 +1,71 @@
+@import '../../styles/variables';
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-caption;
+  font-weight: 500;
+  margin-right: $spacing-xs;
+
+  &--primary {
+    background: rgba(25, 118, 210, 0.1);
+    color: $primary-dark;
+  }
+
+  &--success {
+    background: rgba(76, 175, 80, 0.1);
+    color: darken($success-color, 20%);
+  }
+
+  &--warning {
+    background: rgba(255, 152, 0, 0.1);
+    color: darken($warning-color, 20%);
+  }
+}
+
+.button {
+  @include button-base;
+
+  &--primary {
+    background: $primary-color;
+    color: white;
+
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+
+  &--small {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-caption;
+  }
+}
+
+.alert {
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  margin-bottom: $spacing-lg;
+
+  &--info {
+    background: rgba(33, 150, 243, 0.1);
+    border-left: 4px solid $info-color;
+    color: darken($info-color, 20%);
+  }
+
+  &--warning {
+    background: rgba(255, 152, 0, 0.1);
+    border-left: 4px solid $warning-color;
+    color: darken($warning-color, 20%);
+  }
+}

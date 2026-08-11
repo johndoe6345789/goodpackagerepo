@@ -1,0 +1,67 @@
+// Design tokens split from _variables.scss to keep each
+// partial under the 100-LOC project limit.
+
+// Color palette
+$primary-color: #1976d2;
+$primary-light: #42a5f5;
+$primary-dark: #1565c0;
+$secondary-color: #dc004e;
+$secondary-light: #f50057;
+$secondary-dark: #c51162;
+
+$background-color: #f0f2f5;
+$surface-color: #ffffff;
+$error-color: #f44336;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$info-color: #2196f3;
+
+$text-primary: rgba(0, 0, 0, 0.87);
+$text-secondary: rgba(0, 0, 0, 0.54);
+$text-disabled: rgba(0, 0, 0, 0.38);
+$text-hint: rgba(0, 0, 0, 0.38);
+
+// Spacing
+$spacing-unit: 8px;
+$spacing-xs: $spacing-unit;
+$spacing-sm: $spacing-unit * 2;
+$spacing-md: $spacing-unit * 3;
+$spacing-lg: $spacing-unit * 4;
+$spacing-xl: $spacing-unit * 6;
+
+// Typography
+$font-family: 'Inter', -apple-system, BlinkMacSystemFont,
+  'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+$font-family-mono: 'JetBrains Mono', 'Fira Code',
+  'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+
+$font-size-h1: 96px;
+$font-size-h2: 60px;
+$font-size-h3: 48px;
+$font-size-h4: 34px;
+$font-size-h5: 24px;
+$font-size-h6: 20px;
+$font-size-subtitle1: 16px;
+$font-size-subtitle2: 14px;
+$font-size-body1: 15px;
+$font-size-body2: 13.5px;
+$font-size-button: 13px;
+$font-size-caption: 12px;
+$font-size-overline: 10px;
+
+// Elevation
+$elevation-1: 0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.1);
+$elevation-2: 0 2px 4px rgba(0,0,0,.06), 0 4px 8px rgba(0,0,0,.1);
+$elevation-3: 0 4px 8px rgba(0,0,0,.08), 0 8px 16px rgba(0,0,0,.1);
+$elevation-4: 0 8px 16px rgba(0,0,0,.1), 0 16px 32px rgba(0,0,0,.12);
+$elevation-5: 0 12px 24px rgba(0,0,0,.12), 0 24px 48px rgba(0,0,0,.14);
+
+// Border radius
+$border-radius-sm: 6px;
+$border-radius-md: 10px;
+$border-radius-lg: 16px;
+$border-radius-xl: 24px;
+
+// Transitions
+$transition-duration: 0.2s;
+$transition-easing: cubic-bezier(0.4, 0.0, 0.2, 1);

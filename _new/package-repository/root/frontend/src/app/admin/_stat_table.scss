@@ -1,0 +1,95 @@
+@import '../../styles/variables';
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: rgba(25, 118, 210, 0.04);
+  border-radius: $border-radius-md;
+
+  &__icon {
+    font-size: 32px;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__label {
+    font-size: $font-size-caption;
+    color: $text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  &__value {
+    font-size: $font-size-h5;
+    font-weight: 500;
+    color: $primary-color;
+  }
+}
+
+.codeBlock {
+  background: rgba(0, 0, 0, 0.87);
+  color: #00ff00;
+  padding: $spacing-lg;
+  border-radius: $border-radius-md;
+  overflow-x: auto;
+  font-family: $font-family-mono;
+  font-size: $font-size-body2;
+  max-height: 500px;
+
+  pre {
+    background: none;
+    padding: 0;
+    margin: 0;
+    color: #00ff00;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto;
+  display: block;
+
+  thead, tbody {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+  th, td {
+    padding: $spacing-md;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  th {
+    font-weight: 500;
+    color: $text-secondary;
+    font-size: $font-size-body2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(0, 0, 0, 0.02);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  tbody tr {
+    transition: background $transition-duration $transition-easing;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+  }
+
+  code {
+    font-family: $font-family-mono;
+    font-size: 0.85em;
+  }
+}

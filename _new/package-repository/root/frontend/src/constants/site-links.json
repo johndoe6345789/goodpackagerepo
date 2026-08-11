@@ -1,0 +1,7 @@
+[
+  {"label": "NextExtra", "url": "http://localhost:3000", "icon": "Home"},
+  {"label": "Webmail", "url": "http://localhost:8025", "icon": "Email"},
+  {"label": "Database Admin", "url": "http://localhost:3002", "icon": "Storage"},
+  {"label": "Package Repo", "url": "http://localhost:5051", "icon": "Inventory", "current": true},
+  {"label": "S3 Storage", "url": "http://localhost:3001", "icon": "CloudQueue"}
+]

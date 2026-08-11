@@ -1,0 +1,87 @@
+@import '../../styles/variables';
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $spacing-xl $spacing-lg;
+  @media (max-width: 768px) {
+    padding: $spacing-md $spacing-sm;
+  }
+}
+
+.header {
+  margin-bottom: $spacing-xl;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+
+  h1 {
+    font-size: $font-size-h3;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+    flex-wrap: wrap;
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-xl;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  overflow-x: auto;
+
+  &__tab {
+    padding: $spacing-md $spacing-lg;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: $text-secondary;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all $transition-duration $transition-easing;
+    margin-bottom: -2px;
+    white-space: nowrap;
+
+    &:hover {
+      color: $primary-color;
+      background: rgba(25, 118, 210, 0.04);
+    }
+
+    &--active {
+      color: $primary-color;
+      border-bottom-color: $primary-color;
+    }
+  }
+}
+
+.section {
+  @include card;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+
+  &__title {
+    font-size: $font-size-h6;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__content {
+    margin-top: $spacing-md;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: $spacing-lg;
+}

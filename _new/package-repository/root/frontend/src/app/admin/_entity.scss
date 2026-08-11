@@ -1,0 +1,56 @@
+@import '../../styles/variables';
+
+.entityCard {
+  @include card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-md;
+  }
+
+  &__name {
+    font-size: $font-size-h6;
+    font-weight: 500;
+  }
+
+  &__details {
+    color: $text-secondary;
+    font-size: $font-size-body2;
+    margin-top: $spacing-sm;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+}
+
+.input {
+  @include input-base;
+  padding: 6px 12px;
+  font-size: $font-size-body2;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.loading {
+  text-align: center;
+  padding: $spacing-xl;
+  color: $text-secondary;
+}
+
+.empty {
+  text-align: center;
+  padding: $spacing-xl;
+  color: $text-secondary;
+
+  &__icon {
+    font-size: 48px;
+    margin-bottom: $spacing-md;
+    opacity: 0.5;
+  }
+}

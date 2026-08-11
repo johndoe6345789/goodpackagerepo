@@ -1,0 +1,44 @@
+@import '../../styles/variables';
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: $spacing-xl $spacing-lg;
+}
+
+.header {
+  margin-bottom: $spacing-xl;
+
+  h1 {
+    font-size: $font-size-h3;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.toc {
+  @include card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+
+  h2 {
+    font-size: $font-size-h6;
+    margin-bottom: $spacing-md;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin-bottom: $spacing-sm;
+
+      a {
+        color: $text-primary;
+
+        &:hover {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+@import '../styles/variables';
+
+.wrap { overflow: auto; flex: 1; }
+
+.table {
+  width: 100%; border-collapse: collapse;
+  font-size: $font-size-body2;
+}
+
+.th {
+  position: sticky; top: 0;
+  background: $background-color;
+  padding: 10px 14px; text-align: left;
+  font-weight: 600; font-size: $font-size-caption;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  color: $text-secondary;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.06);
+  white-space: nowrap; user-select: none;
+}
+
+.row {
+  cursor: pointer;
+  transition: background $transition-duration $transition-easing;
+  &:hover { background: rgba(25, 118, 210, 0.03); }
+  &:nth-child(even) { background: rgba(0, 0, 0, 0.015); }
+  &:nth-child(even):hover {
+    background: rgba(25, 118, 210, 0.04);
+  }
+  &:not(:last-child) td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  }
+}
+
+.active {
+  background: rgba(25, 118, 210, 0.07) !important;
+  &:hover { background: rgba(25, 118, 210, 0.11) !important; }
+}
+
+.td { padding: 10px 14px; color: $text-primary; white-space: nowrap; }
+
+.name {
+  padding: 10px 14px; font-weight: 600;
+  color: $primary-color; white-space: nowrap;
+}
+
+.ver {
+  padding: 10px 14px; white-space: nowrap;
+  font-family: $font-family-mono;
+  font-size: $font-size-caption; color: $text-secondary;
+}
+
+.dim {
+  padding: 10px 14px; white-space: nowrap;
+  color: $text-secondary; font-size: $font-size-caption;
+}
+
+.badge {
+  display: inline-block; padding: 2px 10px;
+  border-radius: $border-radius-xl;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.empty {
+  text-align: center; padding: $spacing-xl;
+  color: $text-secondary;
+}

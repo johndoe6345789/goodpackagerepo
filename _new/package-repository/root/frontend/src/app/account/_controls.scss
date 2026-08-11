@@ -1,0 +1,62 @@
+@import '../../styles/variables';
+
+.button {
+  @include button-base;
+
+  &--primary {
+    background: $primary-color;
+    color: white;
+
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+
+  &--danger {
+    background: $error-color;
+    color: white;
+
+    &:hover {
+      background: darken($error-color, 10%);
+    }
+  }
+}
+
+.alert {
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  margin-bottom: $spacing-lg;
+
+  &--error {
+    background: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid $error-color;
+    color: darken($error-color, 20%);
+  }
+
+  &--success {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid $success-color;
+    color: darken($success-color, 20%);
+  }
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(25, 118, 210, 0.1);
+  color: $primary-dark;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-caption;
+  font-weight: 500;
+  margin-left: $spacing-xs;
+}

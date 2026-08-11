@@ -1,0 +1,5 @@
+[
+  { "value": "100%", "label": "Uptime" },
+  { "value": "0", "label": "Security Issues" },
+  { "value": "\u221E", "label": "Scalability" }
+]

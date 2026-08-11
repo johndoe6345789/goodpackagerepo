@@ -1,0 +1,54 @@
+@import '../styles/variables';
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-xl $spacing-lg;
+}
+
+.hero {
+  text-align: center;
+  padding: $spacing-xl 0;
+
+  &__title {
+    font-size: $font-size-h2;
+    font-weight: 500;
+    color: $text-primary;
+    margin-bottom: $spacing-md;
+  }
+
+  &__subtitle {
+    font-size: $font-size-h6;
+    color: $text-secondary;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: center;
+  }
+}
+
+.button {
+  @include button-base;
+
+  &--primary {
+    background: $primary-color;
+    color: white;
+
+    &:hover {
+      background: $primary-dark;
+    }
+  }
+
+  &--secondary {
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      background: rgba(25, 118, 210, 0.04);
+    }
+  }
+}

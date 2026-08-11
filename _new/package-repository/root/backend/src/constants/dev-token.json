@@ -1,0 +1,7 @@
+{
+  "dev_secret": "dev-secret-key",
+  "default_subject": "dev",
+  "default_scopes": ["read", "write", "admin"],
+  "default_exp_hours": 8760,
+  "token_file": ".local/dev-token"
+}

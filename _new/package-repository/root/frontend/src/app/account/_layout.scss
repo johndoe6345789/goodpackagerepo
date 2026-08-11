@@ -1,0 +1,77 @@
+@import '../../styles/variables';
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: $spacing-xl $spacing-lg;
+}
+
+.header {
+  margin-bottom: $spacing-xl;
+
+  h1 {
+    font-size: $font-size-h3;
+    margin-bottom: $spacing-md;
+  }
+}
+
+.section {
+  @include card;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+
+  &__title {
+    font-size: $font-size-h6;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-md;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &Label {
+      font-weight: 500;
+      color: $text-secondary;
+    }
+
+    &Value {
+      color: $text-primary;
+    }
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__label {
+    font-weight: 500;
+    color: $text-primary;
+  }
+
+  &__input {
+    @include input-base;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-md;
+    justify-content: flex-end;
+  }
+}

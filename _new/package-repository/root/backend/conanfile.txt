@@ -1,0 +1,10 @@
+[requires]
+drogon/1.9.3
+openssl/3.3.2
+
+[options]
+drogon/*:with_postgres=True
+
+[generators]
+CMakeDeps
+CMakeToolchain

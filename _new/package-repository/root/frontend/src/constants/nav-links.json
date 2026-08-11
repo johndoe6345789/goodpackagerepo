@@ -1,0 +1,18 @@
+{
+  "public": [
+    { "label": "Home", "href": "/" },
+    { "label": "Browse", "href": "/browse" },
+    { "label": "Docs", "href": "/docs" }
+  ],
+  "auth": [
+    { "label": "Publish", "href": "/publish" },
+    { "label": "Account", "href": "/account" }
+  ],
+  "admin": [
+    { "label": "Admin", "href": "/admin" }
+  ],
+  "guest": [
+    { "label": "Login", "href": "/login" }
+  ],
+  "logoutLabel": "Logout"
+}
