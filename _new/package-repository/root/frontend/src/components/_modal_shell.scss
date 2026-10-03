@@ -1,4 +1,6 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .modal {
   position: fixed;
@@ -11,15 +13,15 @@
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: $spacing-lg;
+  padding: tokens.$spacing-lg;
 
   &__content {
-    @include card;
+    @include mixins.card;
     max-width: 600px;
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
-    padding: $spacing-xl;
+    padding: tokens.$spacing-xl;
     animation: slideIn 0.2s ease-out;
   }
 
@@ -27,21 +29,21 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: $spacing-lg;
-    padding-bottom: $spacing-md;
+    margin-bottom: tokens.$spacing-lg;
+    padding-bottom: tokens.$spacing-md;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 
     h2 {
       margin: 0;
-      font-size: $font-size-h5;
+      font-size: tokens.$font-size-h5;
     }
   }
 
   &__close {
-    @include button-base;
-    padding: $spacing-xs;
+    @include mixins.button-base;
+    padding: tokens.$spacing-xs;
     background: transparent;
-    color: $text-secondary;
+    color: tokens.$text-secondary;
     border: none;
     font-size: 24px;
     line-height: 1;
@@ -49,19 +51,19 @@
 
     &:hover {
       background: rgba(0, 0, 0, 0.05);
-      color: $text-primary;
+      color: tokens.$text-primary;
     }
   }
 
   &__body {
-    margin-bottom: $spacing-lg;
+    margin-bottom: tokens.$spacing-lg;
   }
 
   &__footer {
     display: flex;
-    gap: $spacing-md;
+    gap: tokens.$spacing-md;
     justify-content: flex-end;
-    padding-top: $spacing-md;
+    padding-top: tokens.$spacing-md;
     border-top: 1px solid rgba(0, 0, 0, 0.12);
   }
 }

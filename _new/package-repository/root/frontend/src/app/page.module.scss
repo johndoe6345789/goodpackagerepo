@@ -1,5 +1,5 @@
 /* Home page styles — split into partials to keep each
  * file under the 100-LOC project limit.
  */
-@import './home_hero';
-@import './home_grid';
+@use 'home_hero';
+@use 'home_grid';

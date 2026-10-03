@@ -1,74 +1,76 @@
-@import '../../styles/variables';
+@use '../../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-lg;
+  padding: tokens.$spacing-xl tokens.$spacing-lg;
   @media (max-width: 768px) {
-    padding: $spacing-md $spacing-sm;
+    padding: tokens.$spacing-md tokens.$spacing-sm;
   }
 }
 
 .header {
-  margin-bottom: $spacing-xl;
+  margin-bottom: tokens.$spacing-xl;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: $spacing-md;
+  gap: tokens.$spacing-md;
 
   h1 {
-    font-size: $font-size-h3;
-    margin-bottom: $spacing-sm;
+    font-size: tokens.$font-size-h3;
+    margin-bottom: tokens.$spacing-sm;
   }
 
   &__actions {
     display: flex;
-    gap: $spacing-md;
+    gap: tokens.$spacing-md;
     flex-wrap: wrap;
   }
 }
 
 .tabs {
   display: flex;
-  gap: $spacing-sm;
-  margin-bottom: $spacing-xl;
+  gap: tokens.$spacing-sm;
+  margin-bottom: tokens.$spacing-xl;
   border-bottom: 2px solid rgba(0, 0, 0, 0.12);
   overflow-x: auto;
 
   &__tab {
-    padding: $spacing-md $spacing-lg;
+    padding: tokens.$spacing-md tokens.$spacing-lg;
     background: none;
     border: none;
     border-bottom: 3px solid transparent;
-    color: $text-secondary;
+    color: tokens.$text-secondary;
     font-weight: 500;
     cursor: pointer;
-    transition: all $transition-duration $transition-easing;
+    transition: all tokens.$transition-duration tokens.$transition-easing;
     margin-bottom: -2px;
     white-space: nowrap;
 
     &:hover {
-      color: $primary-color;
+      color: tokens.$primary-color;
       background: rgba(25, 118, 210, 0.04);
     }
 
     &--active {
-      color: $primary-color;
-      border-bottom-color: $primary-color;
+      color: tokens.$primary-color;
+      border-bottom-color: tokens.$primary-color;
     }
   }
 }
 
 .section {
-  @include card;
-  padding: $spacing-xl;
-  margin-bottom: $spacing-lg;
+  @include mixins.card;
+  padding: tokens.$spacing-xl;
+  margin-bottom: tokens.$spacing-lg;
 
   &__title {
-    font-size: $font-size-h6;
-    margin-bottom: $spacing-lg;
-    padding-bottom: $spacing-md;
+    font-size: tokens.$font-size-h6;
+    margin-bottom: tokens.$spacing-lg;
+    padding-bottom: tokens.$spacing-md;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     display: flex;
     justify-content: space-between;
@@ -76,12 +78,12 @@
   }
 
   &__content {
-    margin-top: $spacing-md;
+    margin-top: tokens.$spacing-md;
   }
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: $spacing-lg;
+  gap: tokens.$spacing-lg;
 }

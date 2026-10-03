@@ -1,21 +1,24 @@
-@import '../../styles/variables';
+@use "sass:color";
+@use '../../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .button {
-  @include button-base;
+  @include mixins.button-base;
 
   &--primary {
-    background: $primary-color;
+    background: tokens.$primary-color;
     color: white;
 
     &:hover {
-      background: $primary-dark;
+      background: tokens.$primary-dark;
     }
   }
 
   &--secondary {
     background: transparent;
-    color: $primary-color;
-    border: 1px solid $primary-color;
+    color: tokens.$primary-color;
+    border: 1px solid tokens.$primary-color;
 
     &:hover {
       background: rgba(25, 118, 210, 0.04);
@@ -23,30 +26,30 @@
   }
 
   &--danger {
-    background: $error-color;
+    background: tokens.$error-color;
     color: white;
 
     &:hover {
-      background: darken($error-color, 10%);
+      background: color.adjust(tokens.$error-color, $lightness: -10%);
     }
   }
 }
 
 .alert {
-  padding: $spacing-md;
-  border-radius: $border-radius-sm;
-  margin-bottom: $spacing-lg;
+  padding: tokens.$spacing-md;
+  border-radius: tokens.$border-radius-sm;
+  margin-bottom: tokens.$spacing-lg;
 
   &--error {
     background: rgba(244, 67, 54, 0.1);
-    border-left: 4px solid $error-color;
-    color: darken($error-color, 20%);
+    border-left: 4px solid tokens.$error-color;
+    color: color.adjust(tokens.$error-color, $lightness: -20%);
   }
 
   &--success {
     background: rgba(76, 175, 80, 0.1);
-    border-left: 4px solid $success-color;
-    color: darken($success-color, 20%);
+    border-left: 4px solid tokens.$success-color;
+    color: color.adjust(tokens.$success-color, $lightness: -20%);
   }
 }
 
@@ -54,9 +57,9 @@
   display: inline-block;
   padding: 4px 8px;
   background: rgba(25, 118, 210, 0.1);
-  color: $primary-dark;
-  border-radius: $border-radius-sm;
-  font-size: $font-size-caption;
+  color: tokens.$primary-dark;
+  border-radius: tokens.$border-radius-sm;
+  font-size: tokens.$font-size-caption;
   font-weight: 500;
-  margin-left: $spacing-xs;
+  margin-left: tokens.$spacing-xs;
 }

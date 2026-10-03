@@ -1,21 +1,24 @@
-@import '../styles/variables';
+@use "sass:color";
+@use '../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .button {
-  @include button-base;
+  @include mixins.button-base;
 
   &--primary {
-    background: $primary-color;
+    background: tokens.$primary-color;
     color: white;
 
     &:hover {
-      background: $primary-dark;
+      background: tokens.$primary-dark;
     }
   }
 
   &--secondary {
     background: transparent;
-    color: $primary-color;
-    border: 1px solid $primary-color;
+    color: tokens.$primary-color;
+    border: 1px solid tokens.$primary-color;
 
     &:hover {
       background: rgba(25, 118, 210, 0.04);
@@ -23,11 +26,11 @@
   }
 
   &--danger {
-    background: $error-color;
+    background: tokens.$error-color;
     color: white;
 
     &:hover {
-      background: darken($error-color, 10%);
+      background: color.adjust(tokens.$error-color, $lightness: -10%);
     }
   }
 }
@@ -35,13 +38,13 @@
 .fieldArray {
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
+  gap: tokens.$spacing-md;
 
   &__item {
-    @include card;
-    padding: $spacing-md;
+    @include mixins.card;
+    padding: tokens.$spacing-md;
     display: flex;
-    gap: $spacing-md;
+    gap: tokens.$spacing-md;
     align-items: flex-start;
   }
 
@@ -50,12 +53,12 @@
   }
 
   &__remove {
-    @include button-base;
-    padding: $spacing-xs $spacing-sm;
+    @include mixins.button-base;
+    padding: tokens.$spacing-xs tokens.$spacing-sm;
     background: transparent;
-    color: $error-color;
-    border: 1px solid $error-color;
-    font-size: $font-size-caption;
+    color: tokens.$error-color;
+    border: 1px solid tokens.$error-color;
+    font-size: tokens.$font-size-caption;
 
     &:hover {
       background: rgba(244, 67, 54, 0.04);
@@ -63,10 +66,10 @@
   }
 
   &__add {
-    @include button-base;
+    @include mixins.button-base;
     background: transparent;
-    color: $primary-color;
-    border: 1px dashed $primary-color;
+    color: tokens.$primary-color;
+    border: 1px dashed tokens.$primary-color;
 
     &:hover {
       background: rgba(25, 118, 210, 0.04);

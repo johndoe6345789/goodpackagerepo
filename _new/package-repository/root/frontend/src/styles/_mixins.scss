@@ -1,24 +1,26 @@
+@use "tokens";
+
 // Shared mixins split from _variables.scss to keep each
 // partial under the 100-LOC project limit.
 
 @mixin elevation($level: 1) {
-  @if $level == 1 { box-shadow: $elevation-1; }
-  @else if $level == 2 { box-shadow: $elevation-2; }
-  @else if $level == 3 { box-shadow: $elevation-3; }
-  @else if $level == 4 { box-shadow: $elevation-4; }
-  @else if $level == 5 { box-shadow: $elevation-5; }
+  @if $level == 1 { box-shadow: tokens.$elevation-1; }
+  @else if $level == 2 { box-shadow: tokens.$elevation-2; }
+  @else if $level == 3 { box-shadow: tokens.$elevation-3; }
+  @else if $level == 4 { box-shadow: tokens.$elevation-4; }
+  @else if $level == 5 { box-shadow: tokens.$elevation-5; }
 }
 
 @mixin button-base {
   display: inline-flex;
   align-items: center; justify-content: center;
-  padding: $spacing-sm $spacing-md;
-  border: none; border-radius: $border-radius-sm;
-  font-family: $font-family;
-  font-size: $font-size-button;
+  padding: tokens.$spacing-sm tokens.$spacing-md;
+  border: none; border-radius: tokens.$border-radius-sm;
+  font-family: tokens.$font-family;
+  font-size: tokens.$font-size-button;
   font-weight: 600; letter-spacing: 0.3px;
   cursor: pointer;
-  transition: all $transition-duration $transition-easing;
+  transition: all tokens.$transition-duration tokens.$transition-easing;
   outline: none; text-transform: uppercase;
   &:hover { @include elevation(2); transform: translateY(-1px); }
   &:active { transform: translateY(0); @include elevation(1); }
@@ -26,31 +28,31 @@
 }
 
 @mixin card {
-  background: $surface-color;
-  border-radius: $border-radius-md;
+  background: tokens.$surface-color;
+  border-radius: tokens.$border-radius-md;
   @include elevation(1);
   border: 1px solid rgba(0,0,0,.04);
-  transition: all $transition-duration $transition-easing;
+  transition: all tokens.$transition-duration tokens.$transition-easing;
   &:hover { @include elevation(2); }
 }
 
 @mixin input-base {
   width: 100%;
-  padding: 10px $spacing-sm;
+  padding: 10px tokens.$spacing-sm;
   border: 1.5px solid rgba(0,0,0,.15);
-  border-radius: $border-radius-sm;
-  font-family: $font-family;
-  font-size: $font-size-body2;
-  color: $text-primary;
-  background: $surface-color;
-  transition: all $transition-duration $transition-easing;
+  border-radius: tokens.$border-radius-sm;
+  font-family: tokens.$font-family;
+  font-size: tokens.$font-size-body2;
+  color: tokens.$text-primary;
+  background: tokens.$surface-color;
+  transition: all tokens.$transition-duration tokens.$transition-easing;
   &:focus {
     outline: none;
-    border-color: $primary-color;
+    border-color: tokens.$primary-color;
     box-shadow: 0 0 0 3px rgba(25,118,210,.12);
   }
   &:disabled {
     background: rgba(0,0,0,.04);
-    color: $text-disabled; cursor: not-allowed;
+    color: tokens.$text-disabled; cursor: not-allowed;
   }
 }

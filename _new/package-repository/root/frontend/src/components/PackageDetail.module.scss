@@ -1,84 +1,86 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .panel {
   border-top: 1px solid rgba(0, 0, 0, 0.06);
-  padding: $spacing-sm $spacing-lg;
-  background: $surface-color; min-height: 80px;
+  padding: tokens.$spacing-sm tokens.$spacing-lg;
+  background: tokens.$surface-color; min-height: 80px;
   overflow-y: auto;
 }
 
 .hint {
-  color: $text-hint; font-size: $font-size-body2;
+  color: tokens.$text-hint; font-size: tokens.$font-size-body2;
   margin: 0; font-style: italic;
 }
 
 .header {
   display: flex; align-items: center;
-  justify-content: space-between; gap: $spacing-md;
+  justify-content: space-between; gap: tokens.$spacing-md;
   flex-wrap: wrap;
 }
 
 .title {
-  font-size: $font-size-h6; margin: 0;
-  color: $text-primary; letter-spacing: -0.3px;
+  font-size: tokens.$font-size-h6; margin: 0;
+  color: tokens.$text-primary; letter-spacing: -0.3px;
 }
 
 .btn {
-  @include button-base;
-  padding: 7px $spacing-md;
-  background: $primary-color; color: #fff;
-  font-size: $font-size-caption;
-  border-radius: $border-radius-xl;
-  &:hover { background: $primary-dark; }
+  @include mixins.button-base;
+  padding: 7px tokens.$spacing-md;
+  background: tokens.$primary-color; color: #fff;
+  font-size: tokens.$font-size-caption;
+  border-radius: tokens.$border-radius-xl;
+  &:hover { background: tokens.$primary-dark; }
 }
 
 .meta {
   display: flex; gap: 6px;
-  margin-top: $spacing-xs; flex-wrap: wrap;
+  margin-top: tokens.$spacing-xs; flex-wrap: wrap;
 }
 
 .tag {
   display: inline-block; padding: 3px 10px;
-  border-radius: $border-radius-xl;
+  border-radius: tokens.$border-radius-xl;
   font-size: 11px; font-weight: 600;
-  background: rgba(0, 0, 0, 0.05); color: $text-primary;
+  background: rgba(0, 0, 0, 0.05); color: tokens.$text-primary;
 }
 
 .error {
-  margin: $spacing-xs 0 0; padding: 6px $spacing-sm;
+  margin: tokens.$spacing-xs 0 0; padding: 6px tokens.$spacing-sm;
   background: #fdecea; color: #b71c1c;
-  border-radius: $border-radius-sm;
-  font-size: $font-size-caption;
+  border-radius: tokens.$border-radius-sm;
+  font-size: tokens.$font-size-caption;
 }
 
 .stats {
-  display: flex; gap: $spacing-md;
-  margin-top: $spacing-xs; flex-wrap: wrap;
-  font-size: $font-size-caption; color: $text-secondary;
+  display: flex; gap: tokens.$spacing-md;
+  margin-top: tokens.$spacing-xs; flex-wrap: wrap;
+  font-size: tokens.$font-size-caption; color: tokens.$text-secondary;
 }
 
 .digest {
-  font-family: $font-family-mono;
-  color: $text-hint; font-size: 11px;
+  font-family: tokens.$font-family-mono;
+  color: tokens.$text-hint; font-size: 11px;
 }
 
 .desc {
-  font-size: $font-size-body2;
-  color: $text-secondary; margin: $spacing-xs 0 0;
+  font-size: tokens.$font-size-body2;
+  color: tokens.$text-secondary; margin: tokens.$spacing-xs 0 0;
   line-height: 1.5;
 }
 
 .pre {
-  margin: $spacing-xs 0 0;
-  padding: 10px $spacing-sm;
+  margin: tokens.$spacing-xs 0 0;
+  padding: 10px tokens.$spacing-sm;
   background: rgba(0, 0, 0, 0.03);
-  border-radius: $border-radius-sm;
+  border-radius: tokens.$border-radius-sm;
   overflow-x: auto; white-space: pre-wrap;
   word-break: break-all;
 }
 
 .code {
-  font-family: $font-family-mono;
-  font-size: $font-size-caption; color: $primary-dark;
+  font-family: tokens.$font-family-mono;
+  font-size: tokens.$font-size-caption; color: tokens.$primary-dark;
   line-height: 1.7; background: none; padding: 0;
 }

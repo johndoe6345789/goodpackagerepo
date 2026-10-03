@@ -1,62 +1,65 @@
-@import '../../styles/variables';
+@use "sass:color";
+@use '../../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 80px);
-  padding: $spacing-lg;
+  padding: tokens.$spacing-lg;
 }
 
 .loginBox {
-  @include card;
+  @include mixins.card;
   width: 100%;
   max-width: 400px;
-  padding: $spacing-xl;
+  padding: tokens.$spacing-xl;
   
   &__header {
     text-align: center;
-    margin-bottom: $spacing-xl;
+    margin-bottom: tokens.$spacing-xl;
     
     h1 {
-      font-size: $font-size-h4;
-      margin-bottom: $spacing-sm;
+      font-size: tokens.$font-size-h4;
+      margin-bottom: tokens.$spacing-sm;
     }
     
     p {
-      color: $text-secondary;
+      color: tokens.$text-secondary;
     }
   }
   
   &__form {
     display: flex;
     flex-direction: column;
-    gap: $spacing-lg;
+    gap: tokens.$spacing-lg;
   }
   
   &__group {
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
+    gap: tokens.$spacing-sm;
   }
   
   &__label {
     font-weight: 500;
-    color: $text-primary;
+    color: tokens.$text-primary;
   }
   
   &__input {
-    @include input-base;
+    @include mixins.input-base;
   }
   
   &__button {
-    @include button-base;
-    background: $primary-color;
+    @include mixins.button-base;
+    background: tokens.$primary-color;
     color: white;
-    margin-top: $spacing-md;
+    margin-top: tokens.$spacing-md;
     
     &:hover {
-      background: $primary-dark;
+      background: tokens.$primary-dark;
     }
     
     &:disabled {
@@ -67,19 +70,19 @@
 }
 
 .alert {
-  padding: $spacing-md;
-  border-radius: $border-radius-sm;
-  margin-bottom: $spacing-lg;
+  padding: tokens.$spacing-md;
+  border-radius: tokens.$border-radius-sm;
+  margin-bottom: tokens.$spacing-lg;
   
   &--error {
     background: rgba(244, 67, 54, 0.1);
-    border-left: 4px solid $error-color;
-    color: darken($error-color, 20%);
+    border-left: 4px solid tokens.$error-color;
+    color: color.adjust(tokens.$error-color, $lightness: -20%);
   }
   
   &--success {
     background: rgba(76, 175, 80, 0.1);
-    border-left: 4px solid $success-color;
-    color: darken($success-color, 20%);
+    border-left: 4px solid tokens.$success-color;
+    color: color.adjust(tokens.$success-color, $lightness: -20%);
   }
 }

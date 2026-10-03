@@ -1,11 +1,13 @@
-@import '../../styles/variables';
+@use '../../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .layout {
   display: grid;
   grid-template-columns: 210px 1fr;
   grid-template-rows: auto 1fr auto auto auto;
   height: calc(100vh - 60px);
-  background: $background-color;
+  background: tokens.$background-color;
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     height: auto;
@@ -14,24 +16,24 @@
 
 .toolbar {
   grid-column: 1 / -1;
-  display: flex; align-items: center; gap: $spacing-sm;
-  padding: $spacing-sm $spacing-lg;
-  background: $surface-color;
+  display: flex; align-items: center; gap: tokens.$spacing-sm;
+  padding: tokens.$spacing-sm tokens.$spacing-lg;
+  background: tokens.$surface-color;
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   flex-wrap: wrap;
 }
 
 .search {
   flex: 1; min-width: 180px;
-  @include input-base;
-  padding: 10px $spacing-md;
-  font-size: $font-size-body1;
-  border-radius: $border-radius-xl;
-  background: $background-color;
+  @include mixins.input-base;
+  padding: 10px tokens.$spacing-md;
+  font-size: tokens.$font-size-body1;
+  border-radius: tokens.$border-radius-xl;
+  background: tokens.$background-color;
   border-color: transparent;
   &:focus {
-    background: $surface-color;
-    border-color: $primary-color;
+    background: tokens.$surface-color;
+    border-color: tokens.$primary-color;
   }
 }
 
@@ -40,33 +42,33 @@
   @media (max-width: 768px) { display: none; }
 }
 
-.main { overflow: auto; background: $surface-color; }
+.main { overflow: auto; background: tokens.$surface-color; }
 
 .pager {
   grid-column: 1 / -1;
   border-top: 1px solid rgba(0, 0, 0, 0.04);
-  background: $surface-color;
+  background: tokens.$surface-color;
 }
 
 .detail { grid-column: 1 / -1; }
 
 .offline {
-  color: $text-secondary; font-size: $font-size-body2;
-  padding: $spacing-md 0;
+  color: tokens.$text-secondary; font-size: tokens.$font-size-body2;
+  padding: tokens.$spacing-md 0;
   code {
-    font-family: $font-family-mono;
+    font-family: tokens.$font-family-mono;
     background: rgba(25, 118, 210, 0.06);
-    padding: 2px 8px; border-radius: $border-radius-sm;
-    color: $primary-dark;
+    padding: 2px 8px; border-radius: tokens.$border-radius-sm;
+    color: tokens.$primary-dark;
   }
 }
 
 .status {
   grid-column: 1 / -1;
-  display: flex; align-items: center; gap: $spacing-lg;
-  padding: 5px $spacing-md;
-  background: $background-color;
+  display: flex; align-items: center; gap: tokens.$spacing-lg;
+  padding: 5px tokens.$spacing-md;
+  background: tokens.$background-color;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
-  font-size: $font-size-caption;
-  color: $text-hint; letter-spacing: 0.2px;
+  font-size: tokens.$font-size-caption;
+  color: tokens.$text-hint; letter-spacing: 0.2px;
 }

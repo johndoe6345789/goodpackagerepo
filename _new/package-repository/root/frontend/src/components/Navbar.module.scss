@@ -1,30 +1,32 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .navbar {
-  background: $surface-color;
+  background: tokens.$surface-color;
   border-bottom: 1px solid rgba(0,0,0,.06);
-  @include elevation(1);
+  @include mixins.elevation(1);
   position: sticky; top: 0; z-index: 1000;
 
   &::before {
     content: '';
     display: block; height: 3px;
-    background: linear-gradient(90deg, $primary-color, $primary-light, #7c4dff);
+    background: linear-gradient(90deg, tokens.$primary-color, tokens.$primary-light, #7c4dff);
   }
 
   &__container {
     max-width: 1200px; margin: 0 auto;
-    padding: 12px $spacing-lg;
+    padding: 12px tokens.$spacing-lg;
     display: flex; align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap; gap: $spacing-sm;
+    flex-wrap: wrap; gap: tokens.$spacing-sm;
   }
 
   &__logo {
-    font-size: $font-size-h5; font-weight: 700;
-    color: $primary-color; text-decoration: none;
+    font-size: tokens.$font-size-h5; font-weight: 700;
+    color: tokens.$primary-color; text-decoration: none;
     letter-spacing: -0.5px;
-    &:hover { text-decoration: none; color: $primary-dark; }
+    &:hover { text-decoration: none; color: tokens.$primary-dark; }
   }
 
   &__nav {
@@ -32,32 +34,32 @@
     list-style: none; margin: 0; padding: 0;
     align-items: center; flex-wrap: wrap;
     @media (max-width: 600px) {
-      gap: 2px; font-size: $font-size-caption;
+      gap: 2px; font-size: tokens.$font-size-caption;
     }
   }
 
   &__link {
-    color: $text-secondary; font-weight: 500;
+    color: tokens.$text-secondary; font-weight: 500;
     white-space: nowrap; padding: 6px 10px;
-    border-radius: $border-radius-sm;
-    transition: all $transition-duration $transition-easing;
+    border-radius: tokens.$border-radius-sm;
+    transition: all tokens.$transition-duration tokens.$transition-easing;
     &:hover {
-      color: $primary-color; background: rgba(25,118,210,.06);
+      color: tokens.$primary-color; background: rgba(25,118,210,.06);
       text-decoration: none;
     }
   }
 
   &__button {
-    @include button-base;
-    padding: 6px $spacing-sm;
+    @include mixins.button-base;
+    padding: 6px tokens.$spacing-sm;
     background: transparent;
-    color: $error-color;
+    color: tokens.$error-color;
     border: 1.5px solid rgba(244,67,54,.3);
-    font-size: $font-size-caption;
-    white-space: nowrap; border-radius: $border-radius-xl;
+    font-size: tokens.$font-size-caption;
+    white-space: nowrap; border-radius: tokens.$border-radius-xl;
     &:hover {
       background: rgba(244,67,54,.06);
-      border-color: $error-color;
+      border-color: tokens.$error-color;
     }
   }
 }

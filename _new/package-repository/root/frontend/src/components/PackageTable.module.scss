@@ -1,26 +1,27 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "tokens";
 
 .wrap { overflow: auto; flex: 1; }
 
 .table {
   width: 100%; border-collapse: collapse;
-  font-size: $font-size-body2;
+  font-size: tokens.$font-size-body2;
 }
 
 .th {
   position: sticky; top: 0;
-  background: $background-color;
+  background: tokens.$background-color;
   padding: 10px 14px; text-align: left;
-  font-weight: 600; font-size: $font-size-caption;
+  font-weight: 600; font-size: tokens.$font-size-caption;
   text-transform: uppercase; letter-spacing: 0.6px;
-  color: $text-secondary;
+  color: tokens.$text-secondary;
   border-bottom: 2px solid rgba(0, 0, 0, 0.06);
   white-space: nowrap; user-select: none;
 }
 
 .row {
   cursor: pointer;
-  transition: background $transition-duration $transition-easing;
+  transition: background tokens.$transition-duration tokens.$transition-easing;
   &:hover { background: rgba(25, 118, 210, 0.03); }
   &:nth-child(even) { background: rgba(0, 0, 0, 0.015); }
   &:nth-child(even):hover {
@@ -36,32 +37,32 @@
   &:hover { background: rgba(25, 118, 210, 0.11) !important; }
 }
 
-.td { padding: 10px 14px; color: $text-primary; white-space: nowrap; }
+.td { padding: 10px 14px; color: tokens.$text-primary; white-space: nowrap; }
 
 .name {
   padding: 10px 14px; font-weight: 600;
-  color: $primary-color; white-space: nowrap;
+  color: tokens.$primary-color; white-space: nowrap;
 }
 
 .ver {
   padding: 10px 14px; white-space: nowrap;
-  font-family: $font-family-mono;
-  font-size: $font-size-caption; color: $text-secondary;
+  font-family: tokens.$font-family-mono;
+  font-size: tokens.$font-size-caption; color: tokens.$text-secondary;
 }
 
 .dim {
   padding: 10px 14px; white-space: nowrap;
-  color: $text-secondary; font-size: $font-size-caption;
+  color: tokens.$text-secondary; font-size: tokens.$font-size-caption;
 }
 
 .badge {
   display: inline-block; padding: 2px 10px;
-  border-radius: $border-radius-xl;
+  border-radius: tokens.$border-radius-xl;
   font-size: 11px; font-weight: 600;
   letter-spacing: 0.2px;
 }
 
 .empty {
-  text-align: center; padding: $spacing-xl;
-  color: $text-secondary;
+  text-align: center; padding: tokens.$spacing-xl;
+  color: tokens.$text-secondary;
 }

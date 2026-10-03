@@ -1,47 +1,48 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "tokens";
 
 .pager {
   display: flex; align-items: center;
   justify-content: center;
-  gap: 3px; padding: $spacing-xs $spacing-sm;
+  gap: 3px; padding: tokens.$spacing-xs tokens.$spacing-sm;
 }
 
 .btn {
   display: inline-flex; align-items: center;
   justify-content: center;
-  padding: 5px 10px; font-size: $font-size-body2;
-  background: transparent; color: $text-secondary;
-  border: none; border-radius: $border-radius-sm;
+  padding: 5px 10px; font-size: tokens.$font-size-body2;
+  background: transparent; color: tokens.$text-secondary;
+  border: none; border-radius: tokens.$border-radius-sm;
   cursor: pointer; min-width: 34px;
-  font-family: $font-family; font-weight: 500;
-  transition: all $transition-duration $transition-easing;
+  font-family: tokens.$font-family; font-weight: 500;
+  transition: all tokens.$transition-duration tokens.$transition-easing;
   &:disabled { opacity: 0.25; cursor: default; }
   &:hover:not(:disabled) {
     background: rgba(0, 0, 0, 0.05);
-    color: $text-primary;
+    color: tokens.$text-primary;
   }
 }
 
 .num {
   display: inline-flex; align-items: center;
   justify-content: center;
-  padding: 5px 10px; font-size: $font-size-body2;
-  background: transparent; color: $text-primary;
-  border: none; border-radius: $border-radius-sm;
+  padding: 5px 10px; font-size: tokens.$font-size-body2;
+  background: transparent; color: tokens.$text-primary;
+  border: none; border-radius: tokens.$border-radius-sm;
   cursor: pointer; min-width: 34px;
-  font-family: $font-family; font-weight: 500;
-  transition: all $transition-duration $transition-easing;
+  font-family: tokens.$font-family; font-weight: 500;
+  transition: all tokens.$transition-duration tokens.$transition-easing;
   &:hover { background: rgba(0, 0, 0, 0.05); }
 }
 
 .active {
-  background: $primary-color !important;
+  background: tokens.$primary-color !important;
   color: #fff !important; font-weight: 600;
-  border-radius: $border-radius-xl;
-  &:hover { background: $primary-dark !important; }
+  border-radius: tokens.$border-radius-xl;
+  &:hover { background: tokens.$primary-dark !important; }
 }
 
 .dots {
-  padding: 5px 4px; color: $text-hint;
-  font-size: $font-size-body2;
+  padding: 5px 4px; color: tokens.$text-hint;
+  font-size: tokens.$font-size-body2;
 }

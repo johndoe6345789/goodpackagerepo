@@ -1,29 +1,31 @@
-@import '../../styles/variables';
+@use '../../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-lg;
+  padding: tokens.$spacing-xl tokens.$spacing-lg;
 }
 
 .header {
-  margin-bottom: $spacing-xl;
+  margin-bottom: tokens.$spacing-xl;
 
   h1 {
-    font-size: $font-size-h3;
-    margin-bottom: $spacing-md;
+    font-size: tokens.$font-size-h3;
+    margin-bottom: tokens.$spacing-md;
   }
 }
 
 .section {
-  @include card;
-  padding: $spacing-xl;
-  margin-bottom: $spacing-lg;
+  @include mixins.card;
+  padding: tokens.$spacing-xl;
+  margin-bottom: tokens.$spacing-lg;
 
   &__title {
-    font-size: $font-size-h6;
-    margin-bottom: $spacing-lg;
-    padding-bottom: $spacing-md;
+    font-size: tokens.$font-size-h6;
+    margin-bottom: tokens.$spacing-lg;
+    padding-bottom: tokens.$spacing-md;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   }
 }
@@ -31,7 +33,7 @@
 .info {
   display: flex;
   flex-direction: column;
-  gap: $spacing-md;
+  gap: tokens.$spacing-md;
 
   &__item {
     display: flex;
@@ -40,11 +42,11 @@
 
     &Label {
       font-weight: 500;
-      color: $text-secondary;
+      color: tokens.$text-secondary;
     }
 
     &Value {
-      color: $text-primary;
+      color: tokens.$text-primary;
     }
   }
 }
@@ -52,26 +54,26 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: $spacing-lg;
+  gap: tokens.$spacing-lg;
 
   &__group {
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
+    gap: tokens.$spacing-sm;
   }
 
   &__label {
     font-weight: 500;
-    color: $text-primary;
+    color: tokens.$text-primary;
   }
 
   &__input {
-    @include input-base;
+    @include mixins.input-base;
   }
 
   &__actions {
     display: flex;
-    gap: $spacing-md;
+    gap: tokens.$spacing-md;
     justify-content: flex-end;
   }
 }
