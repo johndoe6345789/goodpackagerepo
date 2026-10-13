@@ -1,6 +1,6 @@
 /* Modal styles — split into partials to keep each file
  * under the 100-LOC project limit.
  */
-@import './modal_shell';
-@import './modal_form';
-@import './modal_buttons';
+@use 'modal_shell';
+@use 'modal_form';
+@use 'modal_buttons';

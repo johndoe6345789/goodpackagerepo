@@ -1,20 +1,21 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "tokens";
 
 .sidebar {
   display: flex; flex-direction: column;
-  background: $surface-color;
+  background: tokens.$surface-color;
   border-right: 1px solid rgba(0,0,0,.06);
-  overflow-y: auto; padding: $spacing-xs 0;
+  overflow-y: auto; padding: tokens.$spacing-xs 0;
 }
 
 .item {
   display: flex; align-items: center; gap: 10px;
   padding: 8px 14px; border: none;
   background: transparent; cursor: pointer;
-  font-size: $font-size-body2; color: $text-primary;
+  font-size: tokens.$font-size-body2; color: tokens.$text-primary;
   text-align: left; text-transform: none;
   letter-spacing: 0;
-  transition: all $transition-duration $transition-easing;
+  transition: all tokens.$transition-duration tokens.$transition-easing;
   &:hover {
     background: rgba(0,0,0,.03);
     transform: none;
@@ -23,8 +24,8 @@
 
 .active {
   background: rgba(25,118,210,.07) !important;
-  color: $primary-color; font-weight: 600;
-  border-right: 3px solid $primary-color;
+  color: tokens.$primary-color; font-weight: 600;
+  border-right: 3px solid tokens.$primary-color;
   &:hover { background: rgba(25,118,210,.1) !important; }
 }
 
@@ -42,7 +43,7 @@
 
 .count {
   font-size: 11px; font-weight: 600;
-  color: $text-secondary;
+  color: tokens.$text-secondary;
   background: rgba(0,0,0,.05);
   padding: 1px 7px; border-radius: 10px;
   min-width: 22px; text-align: center;

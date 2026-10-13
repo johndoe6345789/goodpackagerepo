@@ -1,51 +1,53 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-lg;
+  padding: tokens.$spacing-xl tokens.$spacing-lg;
 }
 
 .hero {
   text-align: center;
-  padding: $spacing-xl 0;
+  padding: tokens.$spacing-xl 0;
 
   &__title {
-    font-size: $font-size-h2;
+    font-size: tokens.$font-size-h2;
     font-weight: 500;
-    color: $text-primary;
-    margin-bottom: $spacing-md;
+    color: tokens.$text-primary;
+    margin-bottom: tokens.$spacing-md;
   }
 
   &__subtitle {
-    font-size: $font-size-h6;
-    color: $text-secondary;
-    margin-bottom: $spacing-xl;
+    font-size: tokens.$font-size-h6;
+    color: tokens.$text-secondary;
+    margin-bottom: tokens.$spacing-xl;
   }
 
   &__actions {
     display: flex;
-    gap: $spacing-md;
+    gap: tokens.$spacing-md;
     justify-content: center;
   }
 }
 
 .button {
-  @include button-base;
+  @include mixins.button-base;
 
   &--primary {
-    background: $primary-color;
+    background: tokens.$primary-color;
     color: white;
 
     &:hover {
-      background: $primary-dark;
+      background: tokens.$primary-dark;
     }
   }
 
   &--secondary {
     background: transparent;
-    color: $primary-color;
-    border: 1px solid $primary-color;
+    color: tokens.$primary-color;
+    border: 1px solid tokens.$primary-color;
 
     &:hover {
       background: rgba(25, 118, 210, 0.04);

@@ -1,12 +1,13 @@
-@import '../../styles/variables';
+@use '../../styles/variables';
+@use "tokens";
 
 .stat {
   display: flex;
   align-items: center;
-  gap: $spacing-md;
-  padding: $spacing-md;
+  gap: tokens.$spacing-md;
+  padding: tokens.$spacing-md;
   background: rgba(25, 118, 210, 0.04);
-  border-radius: $border-radius-md;
+  border-radius: tokens.$border-radius-md;
 
   &__icon {
     font-size: 32px;
@@ -17,27 +18,27 @@
   }
 
   &__label {
-    font-size: $font-size-caption;
-    color: $text-secondary;
+    font-size: tokens.$font-size-caption;
+    color: tokens.$text-secondary;
     text-transform: uppercase;
     letter-spacing: 1px;
   }
 
   &__value {
-    font-size: $font-size-h5;
+    font-size: tokens.$font-size-h5;
     font-weight: 500;
-    color: $primary-color;
+    color: tokens.$primary-color;
   }
 }
 
 .codeBlock {
   background: rgba(0, 0, 0, 0.87);
   color: #00ff00;
-  padding: $spacing-lg;
-  border-radius: $border-radius-md;
+  padding: tokens.$spacing-lg;
+  border-radius: tokens.$border-radius-md;
   overflow-x: auto;
-  font-family: $font-family-mono;
-  font-size: $font-size-body2;
+  font-family: tokens.$font-family-mono;
+  font-size: tokens.$font-size-body2;
   max-height: 500px;
 
   pre {
@@ -61,7 +62,7 @@
   }
 
   th, td {
-    padding: $spacing-md;
+    padding: tokens.$spacing-md;
     text-align: left;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     overflow: hidden;
@@ -70,8 +71,8 @@
 
   th {
     font-weight: 500;
-    color: $text-secondary;
-    font-size: $font-size-body2;
+    color: tokens.$text-secondary;
+    font-size: tokens.$font-size-body2;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     background: rgba(0, 0, 0, 0.02);
@@ -81,7 +82,7 @@
   }
 
   tbody tr {
-    transition: background $transition-duration $transition-easing;
+    transition: background tokens.$transition-duration tokens.$transition-easing;
 
     &:hover {
       background: rgba(0, 0, 0, 0.02);
@@ -89,7 +90,7 @@
   }
 
   code {
-    font-family: $font-family-mono;
+    font-family: tokens.$font-family-mono;
     font-size: 0.85em;
   }
 }

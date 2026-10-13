@@ -1,57 +1,59 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .form {
   display: flex;
   flex-direction: column;
-  gap: $spacing-lg;
+  gap: tokens.$spacing-lg;
 
   &__group {
     display: flex;
     flex-direction: column;
-    gap: $spacing-sm;
+    gap: tokens.$spacing-sm;
   }
 
   &__label {
     font-weight: 500;
-    color: $text-primary;
+    color: tokens.$text-primary;
     display: flex;
     align-items: center;
-    gap: $spacing-xs;
+    gap: tokens.$spacing-xs;
 
     &Required {
-      color: $error-color;
+      color: tokens.$error-color;
     }
   }
 
   &__input {
-    @include input-base;
+    @include mixins.input-base;
   }
 
   &__select {
-    @include input-base;
+    @include mixins.input-base;
     cursor: pointer;
   }
 
   &__textarea {
-    @include input-base;
+    @include mixins.input-base;
     min-height: 100px;
     resize: vertical;
   }
 
   &__help {
-    font-size: $font-size-caption;
-    color: $text-secondary;
+    font-size: tokens.$font-size-caption;
+    color: tokens.$text-secondary;
   }
 
   &__error {
-    font-size: $font-size-caption;
-    color: $error-color;
+    font-size: tokens.$font-size-caption;
+    color: tokens.$error-color;
   }
 
   &__checkbox {
     display: flex;
     align-items: center;
-    gap: $spacing-sm;
+    gap: tokens.$spacing-sm;
 
     input[type="checkbox"] {
       width: 20px;
@@ -68,6 +70,6 @@
   &__row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: $spacing-md;
+    gap: tokens.$spacing-md;
   }
 }

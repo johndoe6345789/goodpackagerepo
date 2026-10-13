@@ -1,60 +1,63 @@
-@import '../styles/variables';
+@use "sass:color";
+@use '../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .card {
-  @include card;
-  padding: $spacing-lg;
-  margin-bottom: $spacing-md;
+  @include mixins.card;
+  padding: tokens.$spacing-lg;
+  margin-bottom: tokens.$spacing-md;
   
   &__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: $spacing-md;
+    margin-bottom: tokens.$spacing-md;
   }
   
   &__title {
-    font-size: $font-size-h6;
+    font-size: tokens.$font-size-h6;
     font-weight: 500;
-    color: $text-primary;
+    color: tokens.$text-primary;
     margin: 0;
   }
   
   &__subtitle {
-    font-size: $font-size-body2;
-    color: $text-secondary;
-    margin-top: $spacing-xs;
+    font-size: tokens.$font-size-body2;
+    color: tokens.$text-secondary;
+    margin-top: tokens.$spacing-xs;
   }
   
   &__body {
-    color: $text-primary;
+    color: tokens.$text-primary;
     line-height: 1.6;
   }
   
   &__footer {
-    margin-top: $spacing-md;
-    padding-top: $spacing-md;
+    margin-top: tokens.$spacing-md;
+    padding-top: tokens.$spacing-md;
     border-top: 1px solid rgba(0, 0, 0, 0.12);
     display: flex;
-    gap: $spacing-sm;
+    gap: tokens.$spacing-sm;
   }
 }
 
 .button {
-  @include button-base;
+  @include mixins.button-base;
   
   &--primary {
-    background: $primary-color;
+    background: tokens.$primary-color;
     color: white;
     
     &:hover {
-      background: $primary-dark;
+      background: tokens.$primary-dark;
     }
   }
   
   &--secondary {
     background: transparent;
-    color: $primary-color;
-    border: 1px solid $primary-color;
+    color: tokens.$primary-color;
+    border: 1px solid tokens.$primary-color;
     
     &:hover {
       background: rgba(25, 118, 210, 0.04);
@@ -62,31 +65,31 @@
   }
   
   &--small {
-    padding: $spacing-xs $spacing-sm;
-    font-size: $font-size-caption;
+    padding: tokens.$spacing-xs tokens.$spacing-sm;
+    font-size: tokens.$font-size-caption;
   }
 }
 
 .badge {
   display: inline-block;
   padding: 4px 8px;
-  border-radius: $border-radius-sm;
-  font-size: $font-size-caption;
+  border-radius: tokens.$border-radius-sm;
+  font-size: tokens.$font-size-caption;
   font-weight: 500;
   text-transform: uppercase;
   
   &--primary {
     background: rgba(25, 118, 210, 0.1);
-    color: $primary-dark;
+    color: tokens.$primary-dark;
   }
   
   &--success {
     background: rgba(76, 175, 80, 0.1);
-    color: darken($success-color, 20%);
+    color: color.adjust(tokens.$success-color, $lightness: -20%);
   }
   
   &--warning {
     background: rgba(255, 152, 0, 0.1);
-    color: darken($warning-color, 20%);
+    color: color.adjust(tokens.$warning-color, $lightness: -20%);
   }
 }

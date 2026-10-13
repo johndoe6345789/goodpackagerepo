@@ -1,45 +1,48 @@
-@import '../../styles/variables';
+@use "sass:color";
+@use '../../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .badge {
   display: inline-block;
   padding: 4px 8px;
-  border-radius: $border-radius-sm;
-  font-size: $font-size-caption;
+  border-radius: tokens.$border-radius-sm;
+  font-size: tokens.$font-size-caption;
   font-weight: 500;
-  margin-right: $spacing-xs;
+  margin-right: tokens.$spacing-xs;
 
   &--primary {
     background: rgba(25, 118, 210, 0.1);
-    color: $primary-dark;
+    color: tokens.$primary-dark;
   }
 
   &--success {
     background: rgba(76, 175, 80, 0.1);
-    color: darken($success-color, 20%);
+    color: color.adjust(tokens.$success-color, $lightness: -20%);
   }
 
   &--warning {
     background: rgba(255, 152, 0, 0.1);
-    color: darken($warning-color, 20%);
+    color: color.adjust(tokens.$warning-color, $lightness: -20%);
   }
 }
 
 .button {
-  @include button-base;
+  @include mixins.button-base;
 
   &--primary {
-    background: $primary-color;
+    background: tokens.$primary-color;
     color: white;
 
     &:hover {
-      background: $primary-dark;
+      background: tokens.$primary-dark;
     }
   }
 
   &--secondary {
     background: transparent;
-    color: $primary-color;
-    border: 1px solid $primary-color;
+    color: tokens.$primary-color;
+    border: 1px solid tokens.$primary-color;
 
     &:hover {
       background: rgba(25, 118, 210, 0.04);
@@ -47,25 +50,25 @@
   }
 
   &--small {
-    padding: $spacing-xs $spacing-sm;
-    font-size: $font-size-caption;
+    padding: tokens.$spacing-xs tokens.$spacing-sm;
+    font-size: tokens.$font-size-caption;
   }
 }
 
 .alert {
-  padding: $spacing-md;
-  border-radius: $border-radius-sm;
-  margin-bottom: $spacing-lg;
+  padding: tokens.$spacing-md;
+  border-radius: tokens.$border-radius-sm;
+  margin-bottom: tokens.$spacing-lg;
 
   &--info {
     background: rgba(33, 150, 243, 0.1);
-    border-left: 4px solid $info-color;
-    color: darken($info-color, 20%);
+    border-left: 4px solid tokens.$info-color;
+    color: color.adjust(tokens.$info-color, $lightness: -20%);
   }
 
   &--warning {
     background: rgba(255, 152, 0, 0.1);
-    border-left: 4px solid $warning-color;
-    color: darken($warning-color, 20%);
+    border-left: 4px solid tokens.$warning-color;
+    color: color.adjust(tokens.$warning-color, $lightness: -20%);
   }
 }

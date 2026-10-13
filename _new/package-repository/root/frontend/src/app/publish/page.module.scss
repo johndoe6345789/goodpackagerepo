@@ -1,70 +1,72 @@
-@import '../../styles/variables';
+@use '../../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-lg;
-  @media (max-width: 600px) { padding: $spacing-md $spacing-sm; }
+  padding: tokens.$spacing-xl tokens.$spacing-lg;
+  @media (max-width: 600px) { padding: tokens.$spacing-md tokens.$spacing-sm; }
 }
 
 .header {
-  margin-bottom: $spacing-xl;
+  margin-bottom: tokens.$spacing-xl;
   
   h1 {
-    font-size: $font-size-h3;
-    margin-bottom: $spacing-md;
+    font-size: tokens.$font-size-h3;
+    margin-bottom: tokens.$spacing-md;
   }
 }
 
 .form {
-  @include card;
-  padding: $spacing-xl;
+  @include mixins.card;
+  padding: tokens.$spacing-xl;
   
   &__group {
-    margin-bottom: $spacing-lg;
+    margin-bottom: tokens.$spacing-lg;
   }
   
   &__label {
     display: block;
     font-weight: 500;
-    margin-bottom: $spacing-sm;
-    color: $text-primary;
+    margin-bottom: tokens.$spacing-sm;
+    color: tokens.$text-primary;
   }
   
   &__input {
-    @include input-base;
+    @include mixins.input-base;
   }
   
   &__help {
-    font-size: $font-size-caption;
-    color: $text-secondary;
-    margin-top: $spacing-xs;
+    font-size: tokens.$font-size-caption;
+    color: tokens.$text-secondary;
+    margin-top: tokens.$spacing-xs;
   }
   
   &__actions {
     display: flex;
-    gap: $spacing-md;
+    gap: tokens.$spacing-md;
     justify-content: flex-end;
-    margin-top: $spacing-xl;
+    margin-top: tokens.$spacing-xl;
   }
 }
 
 .button {
-  @include button-base;
+  @include mixins.button-base;
   
   &--primary {
-    background: $primary-color;
+    background: tokens.$primary-color;
     color: white;
     
     &:hover {
-      background: $primary-dark;
+      background: tokens.$primary-dark;
     }
   }
   
   &--secondary {
     background: transparent;
-    color: $primary-color;
-    border: 1px solid $primary-color;
+    color: tokens.$primary-color;
+    border: 1px solid tokens.$primary-color;
     
     &:hover {
       background: rgba(25, 118, 210, 0.04);
@@ -73,23 +75,23 @@
 }
 
 .fileInput {
-  @include input-base;
-  padding: $spacing-md;
+  @include mixins.input-base;
+  padding: tokens.$spacing-md;
   cursor: pointer;
 }
 
 .success {
-  @include card;
-  padding: $spacing-lg;
+  @include mixins.card;
+  padding: tokens.$spacing-lg;
   background: rgba(76, 175, 80, 0.1);
-  border-left: 4px solid $success-color;
-  margin-bottom: $spacing-lg;
+  border-left: 4px solid tokens.$success-color;
+  margin-bottom: tokens.$spacing-lg;
 }
 
 .error {
-  @include card;
-  padding: $spacing-lg;
+  @include mixins.card;
+  padding: tokens.$spacing-lg;
   background: rgba(244, 67, 54, 0.1);
-  border-left: 4px solid $error-color;
-  margin-bottom: $spacing-lg;
+  border-left: 4px solid tokens.$error-color;
+  margin-bottom: tokens.$spacing-lg;
 }

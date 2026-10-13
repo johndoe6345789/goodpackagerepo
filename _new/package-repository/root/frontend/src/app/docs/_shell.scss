@@ -1,28 +1,30 @@
-@import '../../styles/variables';
+@use '../../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .container {
   max-width: 900px;
   margin: 0 auto;
-  padding: $spacing-xl $spacing-lg;
+  padding: tokens.$spacing-xl tokens.$spacing-lg;
 }
 
 .header {
-  margin-bottom: $spacing-xl;
+  margin-bottom: tokens.$spacing-xl;
 
   h1 {
-    font-size: $font-size-h3;
-    margin-bottom: $spacing-md;
+    font-size: tokens.$font-size-h3;
+    margin-bottom: tokens.$spacing-md;
   }
 }
 
 .toc {
-  @include card;
-  padding: $spacing-lg;
-  margin-bottom: $spacing-xl;
+  @include mixins.card;
+  padding: tokens.$spacing-lg;
+  margin-bottom: tokens.$spacing-xl;
 
   h2 {
-    font-size: $font-size-h6;
-    margin-bottom: $spacing-md;
+    font-size: tokens.$font-size-h6;
+    margin-bottom: tokens.$spacing-md;
   }
 
   ul {
@@ -30,13 +32,13 @@
     padding: 0;
 
     li {
-      margin-bottom: $spacing-sm;
+      margin-bottom: tokens.$spacing-sm;
 
       a {
-        color: $text-primary;
+        color: tokens.$text-primary;
 
         &:hover {
-          color: $primary-color;
+          color: tokens.$primary-color;
         }
       }
     }

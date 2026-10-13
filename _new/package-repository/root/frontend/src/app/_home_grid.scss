@@ -1,55 +1,57 @@
-@import '../styles/variables';
+@use '../styles/variables';
+@use "mixins";
+@use "tokens";
 
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: $spacing-lg;
-  margin-top: $spacing-xl;
+  gap: tokens.$spacing-lg;
+  margin-top: tokens.$spacing-xl;
 }
 
 .feature {
-  @include card;
-  padding: $spacing-lg;
+  @include mixins.card;
+  padding: tokens.$spacing-lg;
   text-align: center;
 
   &__icon {
     font-size: 48px;
-    margin-bottom: $spacing-md;
+    margin-bottom: tokens.$spacing-md;
   }
 
   &__title {
-    font-size: $font-size-h6;
+    font-size: tokens.$font-size-h6;
     font-weight: 500;
-    margin-bottom: $spacing-sm;
+    margin-bottom: tokens.$spacing-sm;
   }
 
   &__description {
-    color: $text-secondary;
+    color: tokens.$text-secondary;
   }
 }
 
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: $spacing-lg;
-  margin-top: $spacing-xl;
+  gap: tokens.$spacing-lg;
+  margin-top: tokens.$spacing-xl;
 }
 
 .stat {
-  @include card;
-  padding: $spacing-lg;
+  @include mixins.card;
+  padding: tokens.$spacing-lg;
   text-align: center;
 
   &__value {
-    font-size: $font-size-h4;
+    font-size: tokens.$font-size-h4;
     font-weight: 500;
-    color: $primary-color;
-    margin-bottom: $spacing-xs;
+    color: tokens.$primary-color;
+    margin-bottom: tokens.$spacing-xs;
   }
 
   &__label {
-    font-size: $font-size-body2;
-    color: $text-secondary;
+    font-size: tokens.$font-size-body2;
+    color: tokens.$text-secondary;
     text-transform: uppercase;
     letter-spacing: 1px;
   }
@@ -58,10 +60,10 @@
 .code {
   background: rgba(0, 0, 0, 0.87);
   color: #00ff00;
-  padding: $spacing-lg;
-  border-radius: $border-radius-md;
-  font-family: $font-family-mono;
-  margin: $spacing-xl 0;
+  padding: tokens.$spacing-lg;
+  border-radius: tokens.$border-radius-md;
+  font-family: tokens.$font-family-mono;
+  margin: tokens.$spacing-xl 0;
   overflow-x: auto;
 
   pre {
@@ -73,6 +75,6 @@
   code {
     background: none;
     color: #00ff00;
-    font-size: $font-size-body2;
+    font-size: tokens.$font-size-body2;
   }
 }
